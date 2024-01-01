@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Registrierung</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+    <div class="register-container">
+        <form id="registerForm" action="/register" method="post">
+            <h2>Registrieren</h2>
+
+            <div class="input-group">
+                <label for="bname">Benutzername:</label>
+                <input type="text" id="bname" name="bname" pattern="[A-Za-zäöüßÄÖÜ]+" required title="Nur Buchstaben erlaubt">
+            </div>
+
+            <div class="input-group">
+                <label for="vname">Vorname:</label>
+                <input type="text" id="vname" name="vname" pattern="[A-Za-zäöüßÄÖÜ]+" required title="Nur Buchstaben erlaubt">
+            </div>
+
+            <div class="input-group">
+                <label for="nname">Nachname:</label>
+                <input type="text" id="nname" name="nname" pattern="[A-Za-zäöüßÄÖÜ]+" required title="Nur Buchstaben erlaubt">
+            </div>
+
+            <div class="input-group">
+                <label for="email">E-Mail:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="input-group">
+                <label for="email2">E-Mail wiederholen:</label>
+                <input type="email" id="email2" name="email2" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Passwort:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password2">Passwort wiederholen:</label>
+                <input type="password" id="password2" name="password2" required>
+            </div>
+
+            <div class="input-group">
+                <label for="phone">Handynummer:</label>
+                <input type="tel" id="phone" name="phone" pattern="[0-9]+" required title="Nur Zahlen erlaubt">
+            </div>
+
+            <div class="input-group">
+                <label for="birthdayDay">Geburtstag (Tag):</label>
+                <input type="number" id="birthdayDay" name="birthdayDay" min="1" max="31" required>
+            </div>
+
+            <div class="input-group">
+                <label for="birthdayMonth">Geburtstag (Monat):</label>
+                <input type="number" id="birthdayMonth" name="birthdayMonth" min="1" max="12" required>
+            </div>
+
+            <div class="input-group">
+                <label for="birthdayYear">Geburtstag (Jahr):</label>
+                <input type="number" id="birthdayYear" name="birthdayYear" min="1900" max="2100" required>
+            </div>
+
+            <button type="submit">Registrieren</button>
+        </form>
+    </div>
+
+    <script>
+        function validateForm() {
+            var email = document.getElementById('email').value;
+            var confirmEmail = document.getElementById('email2').value;
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('password2').value;
+
+            if (email !== confirmEmail) {
+                alert('Die E-Mail-Adressen stimmen nicht überein.');
+                return false;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Die Passwörter stimmen nicht überein.');
+                return false;
+            }
+
+            return true;
+        }
+
+        document.getElementById('registerForm').onsubmit = validateForm;
+    </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+    restart: always
+    ports:
+      - "3005:3005"
+    depends_on:
+      - db
+    volumes:
+      - ./public:/app/public  # Passe dies entsprechend deiner Verzeichnisstruktur an
+      - ./app.js:/app/app.js  # Passe dies entsprechend deiner Verzeichnisstruktur an
+ 
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cargo
+      POSTGRES_PORT: 5433
+    ports:
+      - "5433:5432"
+    networks:
+      - shared-network
+    volumes:
+     # - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres-db:/var/lib/postgresql/data
+
+networks:
+  shared-network:

@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Angebote und Suchanfragen - MyCargonaut</title>
+    <link rel="stylesheet" type="text/css" href="css/dashboard.css">
+</head>
+<body class="dashboard">
+    <header>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html">Startseite</a></li>
+                <li><a href="profile.html">Profil</a></li>
+                <li><a href="vehicles.html">Fahrzeugverwaltung</a></li>
+                <li><a href="offers.html">Angebote/Suchanfragen</a></li>
+                <li><a href="myrides.html">Meine Fahrten</a></li>
+                <li><a href="support.html">Support</a></li>
+                <li><a href="logout.html">Abmelden</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="search-requests">
+            <h2>Suchanfragen</h2>
+            <!-- Liste der aktuellen Suchanfragen -->
+            <!-- Beispielhafte Liste -->
+            <ul>
+                <li>Suche Fahrt von Köln nach Berlin</li>
+                <li>Suche Fahrt von Hamburg nach München</li>
+            </ul>
+        </section>
+
+        <section id="ride-offers">
+            <h2>Angebotene Fahrten</h2>
+            <!-- Liste der aktuellen Fahrtenangebote -->
+            <!-- Beispielhafte Liste -->
+            <ul>
+                <li>Biete Fahrt von Berlin nach Dresden</li>
+                <li>Biete Fahrt von Frankfurt nach Stuttgart</li>
+            </ul>
+        </section>
+
+        <section id="create-search">
+            <h2>Neue Suchanfrage erstellen</h2>
+            <form>
+                <!-- Formular für neue Suchanfrage -->
+                <input type="text" placeholder="Startort">
+                <input type="text" placeholder="Zielort">
+                <input type="date">
+                <button type="submit">Suchanfrage erstellen</button>
+            </form>
+        </section>
+
+        <section id="create-offer">
+            <h2>Neue Fahrt anbieten</h2>
+            <form>
+                <!-- Formular für neues Fahrtenangebot -->
+                <input type="text" placeholder="Startort">
+                <input type="text" placeholder="Zielort">
+                <input type="date">
+                <button type="submit">Fahrt anbieten</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2023 MyCargonaut</p>
+    </footer>
+</body>
+</html>

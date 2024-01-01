@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Login-Seite</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+    <div class="login-container">
+        <form id="loginForm">
+            <h2>Login</h2>
+            <div class="input-group">
+                <label for="username">Benutzername:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Passwort:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Anmelden</button>
+            <div id="error-message" style="color: red; display: none;"></div>
+            <div class="additional-options">
+                <a href="register.html">Registrieren</a>
+                <a href="Password.html">Passwort vergessen?</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').onsubmit = async function (event) {
+            event.preventDefault(); // Verhindert die tatsächliche Formularübermittlung
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Verwende die Fetch-API, um die Daten an den Server zu senden
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+                });
+
+                // Verwende den Statuscode, um zu überprüfen, ob der Login erfolgreich war
+                if (response.status === 200) {
+                    window.location.href = '/dashboard.html'; // Weiterleitung zur Dashboard-Seite
+                } else {
+                    document.getElementById('error-message').style.display = 'block';
+                    document.getElementById('error-message').textContent = 'Kombination aus Benutzername und Passwort ist falsch.';
+                }
+            } catch (error) {
+                console.error('Ein Fehler ist aufgetreten:', error);
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('error-message').textContent = 'Es gab ein Problem mit der Anfrage.';
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Fahrzeugverwaltung - MyCargonaut</title>
+    <link rel="stylesheet" type="text/css" href="css/dashboard.css">
+</head>
+<body class="dashboard">
+    <header>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html">Startseite</a></li>
+                <li><a href="profile.html">Profil</a></li>
+                <li><a href="vehicles.html">Fahrzeugverwaltung</a></li>
+                <li><a href="offers.html">Angebote/Suchanfragen</a></li>
+                <li><a href="myrides.html">Meine Fahrten</a></li>
+                <li><a href="support.html">Support</a></li>
+                <li><a href="logout.html">Abmelden</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="existingVehicles">
+            <h2>Meine Fahrzeuge:</h2>
+            <div id="vehicleList">
+                <!-- Fahrzeuge werden hier aufgelistet -->
+            </div>
+        </section>
+        <section class="vehicle-container">
+            <h2>Neues Fahrzeug erstellen:</h2>
+            <form method="POST" action="/addVehicle">
+                <div class="input-group">
+                    <label for="brand">Marke:</label>
+                    <input type="text" id="brand" name="brand" required>
+                </div>
+                <div class="input-group">
+                    <label for="modell">Modell:</label>
+                    <input type="text" id="modell" name="modell" required>
+                </div>
+                <div class="input-group">
+                    <label for="color">Farbe:</label>
+                    <input type="text" id="color" name="color" required>
+                </div>
+                <div class="input-group">
+                    <label for="consumption">Verbrauch:</label>
+                    <input type="text" id="consumption" name="consumption" required>
+                </div>
+                <div class="input-group">
+                    <label for="seats">Sitzplätze:</label>
+                    <input type="number" id="seats" name="seats" required>
+                </div>
+                <div class="input-group">
+                    <label for="doors">Türen:</label>
+                    <input type="number" id="doors" name="doors" required>
+                </div>
+                <div class="input-group">
+                    <label for="trunkspace">Stauraum:</label>
+                    <input type="text" id="trunkspace" name="trunkspace" required>
+                </div>
+                <div class="input-group">
+                    <label for="gewicht">Maximales Gewicht:</label>
+                    <input type="text" id="gewicht" name="gewicht" required>
+                </div>
+                <button type="submit">Fahrzeugdaten speichern</button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        function deleteVehicle(carId) {
+            fetch(`/deleteVehicle/${carId}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        loadVehicles(); // Liste der Fahrzeuge neu laden
+                    } else {
+                        throw new Error('Fehler beim Löschen des Fahrzeugs');
+                    }
+                })
+                .catch(error => console.error('Fehler:', error));
+        }
+
+        function loadVehicles() {
+            fetch('/getVehicles')
+                .then(response => response.json())
+                .then(vehicles => {
+                    const vehicleList = document.getElementById('vehicleList');
+                    vehicleList.innerHTML = '';
+                    vehicles.forEach(vehicle => {
+                        vehicleList.innerHTML += `
+                                <p>
+                                    ${vehicle.marke} ${vehicle.modell} - Farbe: ${vehicle.farbe}, Verbrauch: ${vehicle.verbrauch}, Sitzplätze: ${vehicle.sitze}, Türen: ${vehicle.tueren}, Stauraum: ${vehicle.stauraum}, Max. Gewicht: ${vehicle.maxgewicht}
+                                    <button onclick="deleteVehicle(${vehicle.carId})">Löschen</button>
+                                </p>`;
+                    });
+                })
+                .catch(error => console.error('Fehler beim Laden der Fahrzeuge:', error));
+        }
+
+        window.onload = loadVehicles;
+    </script>
+
+    <footer>
+        <p>© 2023 MyCargonaut</p>
+    </footer>
+</body>
+</html>

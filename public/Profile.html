@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Profil - MyCargonaut</title>
+    <link rel="stylesheet" type="text/css" href="css/dashboard.css">
+</head>
+<body class="dashboard">
+    <header>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html">Startseite</a></li>
+                <li><a href="profile.html">Profil</a></li>
+                <li><a href="vehicles.html">Fahrzeugverwaltung</a></li>
+                <li><a href="offers.html">Angebote/Suchanfragen</a></li>
+                <li><a href="myrides.html">Meine Fahrten</a></li>
+                <li><a href="support.html">Support</a></li>
+                <li><a href="logout.html">Abmelden</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="profile-container">
+            <h2>Benutzerprofil</h2>
+            <div class="profile-info">
+                <!-- Benutzerinformationen werden hier angezeigt -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2023 MyCargonaut</p>
+    </footer>
+
+    <script>
+        window.onload = async () => {
+            try {
+                const response = await fetch('/getUserData');
+                if (!response.ok) throw new Error('Fehler beim Laden der Benutzerdaten');
+
+                const userData = await response.json();
+                document.querySelector('.profile-info').innerHTML = `
+                        <p><strong>Benutzername:</strong> ${userData.benutzername}</p>
+                        <p><strong>E-Mail:</strong> ${userData.email}</p>
+                        <p><strong>Handynummer:</strong> ${userData.handynummer}</p>
+                        <p><strong>Geburtsdatum:</strong> ${userData.tag}.${userData.monat}.${userData.jahr}</p>
+                        <p><strong>Bewertung:</strong> ${userData.bewertung}</p>
+                    `;
+            } catch (err) {
+                console.error('Fehler:', err);
+            }
+        };
+    </script>
+</body>
+</html>
