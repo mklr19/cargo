@@ -11,7 +11,8 @@
                 <li><a href="dashboard.html">Startseite</a></li>
                 <li><a href="profile.html">Profil</a></li>
                 <li><a href="vehicles.html">Fahrzeugverwaltung</a></li>
-                <li><a href="offers.html">Angebote/Suchanfragen</a></li>
+                <li><a href="offers.html">Angebote</a></li>
+                <li><a href="search.html">Suchanfragen</a></li>
                 <li><a href="myrides.html">Meine Fahrten</a></li>
                 <li><a href="support.html">Support</a></li>
                 <li><a href="logout.html">Abmelden</a></li>
@@ -20,48 +21,134 @@
     </header>
 
     <main>
-        <section id="search-requests">
-            <h2>Suchanfragen</h2>
-            <!-- Liste der aktuellen Suchanfragen -->
-            <!-- Beispielhafte Liste -->
-            <ul>
-                <li>Suche Fahrt von Köln nach Berlin</li>
-                <li>Suche Fahrt von Hamburg nach München</li>
-            </ul>
+        <section id="offer-filter">
+            <h2>Fahrten filtern</h2>
+            <form id="filterForm">
+                <input type="text" id="filterStartOrt" name="filterStartOrt" placeholder="Startort">
+                <input type="text" id="filterZielOrt" name="filterZielOrt" placeholder="Zielort">
+                <input type="date" id="filterDatum" name="filterDatum">
+                <button type="submit">Filtern</button>
+            </form>
         </section>
 
         <section id="ride-offers">
             <h2>Angebotene Fahrten</h2>
-            <!-- Liste der aktuellen Fahrtenangebote -->
-            <!-- Beispielhafte Liste -->
-            <ul>
-                <li>Biete Fahrt von Berlin nach Dresden</li>
-                <li>Biete Fahrt von Frankfurt nach Stuttgart</li>
+            <ul id="offersList">
+                <!-- Angebote werden hier geladen -->
             </ul>
-        </section>
-
-        <section id="create-search">
-            <h2>Neue Suchanfrage erstellen</h2>
-            <form>
-                <!-- Formular für neue Suchanfrage -->
-                <input type="text" placeholder="Startort">
-                <input type="text" placeholder="Zielort">
-                <input type="date">
-                <button type="submit">Suchanfrage erstellen</button>
-            </form>
         </section>
 
         <section id="create-offer">
             <h2>Neue Fahrt anbieten</h2>
-            <form>
-                <!-- Formular für neues Fahrtenangebot -->
-                <input type="text" placeholder="Startort">
-                <input type="text" placeholder="Zielort">
-                <input type="date">
+            <form id="offerForm">
+                <input type="text" id="startOrt" name="startOrt" placeholder="Startort" required>
+                <input type="text" id="zielOrt" name="zielOrt" placeholder="Zielort" required>
+                <input type="date" id="startZeit" name="startZeit" required>
+                <input type="number" id="preisperson" name="preisperson" placeholder="Preis pro Person (z.B. 5.00)" step="0.01" required>
+                <input type="number" id="preisraum" name="preisraum" placeholder="Preis pro Raum (z.B. 2.50)" step="0.01" required>
+                <input type="number" id="preisgewicht" name="preisgewicht" placeholder="Preis pro Gewicht (z.B. 1.75)" step="0.01" required>
+                <input type="number" id="sitze" name="sitze" placeholder="Plätze" required>
+                <input type="number" id="stauraum" name="stauraum" placeholder="Stauraum" required>
+                <input type="number" id="mgewi" name="mgewi" placeholder="maximal Gewicht" required>
+                <select id="carId" name="carId">
+                    <!-- Fahrzeuge werden hier eingefügt -->
+                </select>
                 <button type="submit">Fahrt anbieten</button>
             </form>
         </section>
     </main>
+
+    <script>
+        window.onload = function () {
+            // Laden der Fahrzeuge des Benutzers
+            fetch('/getVehicles')
+                .then(response => response.json())
+                .then(vehicles => {
+                    const vehicleSelect = document.getElementById('carId');
+                    vehicles.forEach(vehicle => {
+                        const option = document.createElement('option');
+                        option.value = vehicle.carId;
+                        option.textContent = `${vehicle.marke} ${vehicle.modell}`;
+                        vehicleSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Fehler beim Laden der Fahrzeuge:', error));
+
+            // Formularverarbeitung für das Hinzufügen eines Angebots
+            document.getElementById('offerForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+                const formData = new FormData(this);
+                const formBody = new URLSearchParams(formData).toString();
+
+                fetch('/addOffer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formBody
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Angebot erfolgreich erstellt');
+                            // Optionale Aktualisierung der Angebotsliste oder Umleitung
+                        } else {
+                            throw new Error('Fehler beim Erstellen des Angebots');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fehler:', error);
+                    });
+            });
+
+            // Laden aller vorhandenen Angebote
+            fetch('/getAllOffers')
+                .then(response => response.json())
+                .then(offers => {
+                    const offersList = document.getElementById('offersList');
+                    offers.forEach(offer => {
+                        offersList.innerHTML += `
+                <li>
+                    ${offer.benutzername} bietet Fahrt von ${offer.startOrt} nach ${offer.zielOrt} am ${offer.startZeit}.
+                    Preis pro Person: ${offer.preisperson}€,Preis pro Raum: ${offer.preisraum}€,Preis pro Gewicht: ${offer.preisgewicht}€, Plätze: ${offer.sitze}, Stauraum: ${offer.stauraum}m², Max. Gewicht: ${offer.maxgewicht}kg
+                    <button onclick="bookOffer(${offer.offerId})">Buchen</button>
+                </li>`;
+                    });
+                })
+                .catch(error => console.error('Fehler beim Laden der Angebote:', error));
+        };
+
+        document.getElementById('filterForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const startOrt = document.getElementById('filterStartOrt').value;
+            const zielOrt = document.getElementById('filterZielOrt').value;
+            const filterDatum = document.getElementById('filterDatum').value;
+
+            fetch(`/getFilteredOffers?startOrt=${encodeURIComponent(startOrt)}&zielOrt=${encodeURIComponent(zielOrt)}&filterDatum=${encodeURIComponent(filterDatum)}`)
+                .then(response => response.json())
+                .then(offers => {
+                    const offersList = document.getElementById('offersList');
+                    offersList.innerHTML = ''; // Leeren der Liste vor dem Hinzufügen der gefilterten Angebote
+
+                    offers.forEach(offer => {
+                        offersList.innerHTML += `
+                    <li>
+                        ${offer.benutzername} bietet Fahrt von ${offer.startOrt} nach ${offer.zielOrt} am ${offer.startZeit}.
+                        Preis pro Person: ${offer.preisperson}€, Preis pro Raum: ${offer.preisraum}€, Preis pro Gewicht: ${offer.preisgewicht}€,
+                        Plätze: ${offer.sitze}, Stauraum: ${offer.stauraum}m², Max. Gewicht: ${offer.maxgewicht}kg
+                        <button onclick="bookOffer(${offer.offerId})">Buchen</button>
+                    </li>`;
+                    });
+                })
+                .catch(error => {
+                    console.error('Fehler beim Filtern der Angebote:', error);
+                });
+        });
+
+        function bookOffer(offerId) {
+            window.location.href = `booking.html?offerId=${offerId}`;
+        }
+    </script>
+
 
     <footer>
         <p>© 2023 MyCargonaut</p>

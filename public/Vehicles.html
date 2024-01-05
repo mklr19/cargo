@@ -11,7 +11,8 @@
                 <li><a href="dashboard.html">Startseite</a></li>
                 <li><a href="profile.html">Profil</a></li>
                 <li><a href="vehicles.html">Fahrzeugverwaltung</a></li>
-                <li><a href="offers.html">Angebote/Suchanfragen</a></li>
+                <li><a href="offers.html">Angebote</a></li>
+                <li><a href="search.html">Suchanfragen</a></li>
                 <li><a href="myrides.html">Meine Fahrten</a></li>
                 <li><a href="support.html">Support</a></li>
                 <li><a href="logout.html">Abmelden</a></li>
@@ -61,6 +62,10 @@
                     <label for="gewicht">Maximales Gewicht:</label>
                     <input type="text" id="gewicht" name="gewicht" required>
                 </div>
+                <div class="input-group">
+                    <label for="sonder">Sonderfunktion:</label>
+                    <input type="text" id="sonder" name="sonder" required>
+                </div>
                 <button type="submit">Fahrzeugdaten speichern</button>
             </form>
         </section>
@@ -88,7 +93,7 @@
                     vehicles.forEach(vehicle => {
                         vehicleList.innerHTML += `
                                 <p>
-                                    ${vehicle.marke} ${vehicle.modell} - Farbe: ${vehicle.farbe}, Verbrauch: ${vehicle.verbrauch}, Sitzplätze: ${vehicle.sitze}, Türen: ${vehicle.tueren}, Stauraum: ${vehicle.stauraum}, Max. Gewicht: ${vehicle.maxgewicht}
+                                    ${vehicle.marke} ${vehicle.modell} - Farbe: ${vehicle.farbe}, Verbrauch: ${vehicle.verbrauch}, Sitzplätze: ${vehicle.sitze}, Türen: ${vehicle.tueren}, Stauraum: ${vehicle.stauraum}, Max. Gewicht: ${vehicle.maxgewicht}, , Sonderfunktion: ${vehicle.sonderfunktion}
                                     <button onclick="deleteVehicle(${vehicle.carId})">Löschen</button>
                                 </p>`;
                     });

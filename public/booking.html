@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8" />
+    <title>Booking - MyCargonaut</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+
+    <div class="profile-container">
+        <h2>Fahrtdetails</h2>
+        <div id="offerDetails">
+            <!-- Angebotdetails werden hier geladen -->
+        </div>
+        <h2>Informationen zu Ihrer Buchung</h2>
+        <form id="bookingForm">
+            <div class="input-group">
+                <label for="persons">Anzahl der Personen:</label>
+                <input type="number" id="persons" name="persons" min="0" required>
+            </div>
+            <div class="input-group">
+                <label for="storageSpace">Benötigter Stauraum (in m²):</label>
+                <input type="number" id="storageSpace" name="storageSpace" min="0" required>
+            </div>
+            <div class="input-group">
+                <label for="weight">Gewicht (in kg):</label>
+                <input type="number" id="weight" name="weight" min="0" required>
+            </div>
+            <div id="totalPrice">
+                <!-- Hier wird der Gesamtpreis angezeigt -->
+            </div>
+            <div id="userBalance">
+                <!-- Aktuelles Guthaben des Benutzers -->
+            </div>
+
+            <div id="remainingBalance">
+                <!-- Verbleibendes Guthaben nach der Buchung -->
+            </div>
+            <button type="submit">Buchen</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const offerId = urlParams.get('offerId');
+            let offerDetailsData = null;
+            let userBalance = 0;
+
+            // Funktion zum Abrufen und Anzeigen des aktuellen Benutzerguthabens
+            function fetchAndDisplayUserBalance() {
+                fetch('/getUserBalance')
+                    .then(response => response.json())
+                    .then(data => {
+                        userBalance = data.geld;
+                        document.getElementById('userBalance').innerText = `Ihr aktuelles Guthaben: ${userBalance}€`;
+                    })
+                    .catch(error => console.error('Fehler beim Laden des Benutzerguthabens:', error));
+            }
+
+            if (offerId) {
+                fetch(`/getOfferDetails?offerId=${offerId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        offerDetailsData = data;
+                        const detailsDiv = document.getElementById('offerDetails');
+                        detailsDiv.innerHTML = `
+                  <p>Angebot von: ${data.benutzername}</p>
+                        <p>ID: ${data.offerId}</p>
+                        <p>Startort: ${data.startOrt}, Zielort: ${data.zielOrt}</p>
+                        <p>Startdatum: ${data.startZeit}</p>
+                        <p>Preise:</p>
+                        <p>pro Person: ${data.preisperson}€, pro m²: ${data.preisraum}€, pro kg: ${data.preisgewicht}€</p>
+                        <p>Verfügbarkeit:</p>
+                        <p>Plätze: ${data.sitze}, Stauraum: ${data.stauraum}m², Gewicht: ${data.maxgewicht}kg</p>
+                    `;
+                    })
+                    .catch(error => console.error('Fehler beim Laden der Angebotdetails:', error));
+            }
+
+            fetchAndDisplayUserBalance();
+
+            document.getElementById('bookingForm').addEventListener('input', updatePriceAndBalance);
+            document.getElementById('bookingForm').addEventListener('submit', submitBooking);
+
+            function updatePriceAndBalance() {
+                const persons = parseInt(document.getElementById('persons').value || 0);
+                const storageSpace = parseInt(document.getElementById('storageSpace').value || 0);
+                const weight = parseInt(document.getElementById('weight').value || 0);
+
+                if (offerDetailsData) {
+                    const totalPrice = (persons * offerDetailsData.preisperson) +
+                        (storageSpace * offerDetailsData.preisraum) +
+                        (weight * offerDetailsData.preisgewicht);
+                    document.getElementById('totalPrice').innerText = `Gesamtpreis: ${totalPrice}€`;
+                    document.getElementById('remainingBalance').innerText = `Verbleibendes Guthaben nach Buchung: ${userBalance - totalPrice}€`;
+                }
+            }
+
+            function submitBooking(event) {
+                event.preventDefault();
+                const persons = parseInt(document.getElementById('persons').value || 0);
+                const storageSpace = parseInt(document.getElementById('storageSpace').value || 0);
+                const weight = parseInt(document.getElementById('weight').value || 0);
+
+                // Überprüfen, ob die Buchungsanfrage zulässig ist
+                if (persons > offerDetailsData.sitze || storageSpace > offerDetailsData.stauraum || weight > offerDetailsData.maxgewicht) {
+                    alert('Buchung nicht möglich: Zu viele Plätze, Raum oder Gewicht angefordert. test');
+                    return;
+                }
+                const totalPrice = (persons * offerDetailsData.preisperson) + (storageSpace * offerDetailsData.preisraum) + (weight * offerDetailsData.preisgewicht);
+                if (totalPrice > userBalance) {
+                    alert('Buchung nicht möglich: Nicht genügend Guthaben.');
+                    return;
+                }
+
+                const formData = new FormData(event.target);
+                formData.append('offerId', offerId);
+                const formBody = new URLSearchParams(formData).toString();
+
+                fetch('/bookOffer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formBody
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Buchung erfolgreich!');
+                            window.location.href = 'dashboard.html';
+                        } else {
+                            response.text().then(text => alert(text));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fehler:', error);
+                        alert('Ein Fehler ist aufgetreten: ' + error.message);
+                    });
+            }
+        });
+    </script>
+
+</body>
+</html>

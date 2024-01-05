@@ -11,7 +11,8 @@
                 <li><a href="dashboard.html">Startseite</a></li>
                 <li><a href="profile.html">Profil</a></li>
                 <li><a href="vehicles.html">Fahrzeugverwaltung</a></li>
-                <li><a href="offers.html">Angebote/Suchanfragen</a></li>
+                <li><a href="offers.html">Angebote</a></li>
+                <li><a href="search.html">Suchanfragen</a></li>
                 <li><a href="myrides.html">Meine Fahrten</a></li>
                 <li><a href="support.html">Support</a></li>
                 <li><a href="logout.html">Abmelden</a></li>
@@ -25,6 +26,21 @@
             <div class="profile-info">
                 <!-- Benutzerinformationen werden hier angezeigt -->
             </div>
+
+            <h2>Geld hinzufügen</h2>
+            <form id="addMoneyForm">
+                <label for="paymentMethod">Zahlungsmethode:</label>
+                <select id="paymentMethod" name="paymentMethod">
+                    <option value="paypal">PayPal</option>
+                    <option value="creditcard">Kreditkarte</option>
+                    <option value="banktransfer">Banküberweisung</option>
+                </select>
+
+                <label for="amount">Betrag:</label>
+                <input type="number" id="amount" name="amount" step="0.01" placeholder="Betrag in Euro" required>
+
+                <button type="submit">Geld hinzufügen</button>
+            </form>
         </section>
     </main>
 
@@ -45,11 +61,29 @@
                         <p><strong>Handynummer:</strong> ${userData.handynummer}</p>
                         <p><strong>Geburtsdatum:</strong> ${userData.tag}.${userData.monat}.${userData.jahr}</p>
                         <p><strong>Bewertung:</strong> ${userData.bewertung}</p>
+                        <p><strong>goldene Küchlers:</strong> ${userData.geld}</p>
                     `;
             } catch (err) {
                 console.error('Fehler:', err);
             }
         };
+        document.getElementById('addMoneyForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const amount = document.getElementById('amount').value;
+            const response = await fetch('/addMoney', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ amount: amount })
+            });
+
+            if (response.ok) {
+                alert('Geld erfolgreich hinzugefügt');
+                window.location.reload(); // Seite neu laden, um das aktualisierte Guthaben anzuzeigen
+            } else {
+                const errorText = await response.text();
+                alert('Fehler: ' + errorText);
+            }
+        });
     </script>
 </body>
 </html>

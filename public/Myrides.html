@@ -11,8 +11,9 @@
                 <li><a href="dashboard.html">Startseite</a></li>
                 <li><a href="profile.html">Profil</a></li>
                 <li><a href="vehicles.html">Fahrzeugverwaltung</a></li>
-                <li><a href="offers.html">Angebote/Suchanfragen</a></li>
-                <li><a href="my-rides.html">Meine Fahrten</a></li>
+                <li><a href="offers.html">Angebote</a></li>
+                <li><a href="search.html">Suchanfragen</a></li>
+                <li><a href="myrides.html">Meine Fahrten</a></li>
                 <li><a href="support.html">Support</a></li>
                 <li><a href="logout.html">Abmelden</a></li>
             </ul>
@@ -21,10 +22,15 @@
 
     <main>
         <section id="current-rides">
-            <h2>Aktuelle Fahrten</h2>
+            <h2>Aktuelle Angebote</h2>
             <ul>
-                <li>Fahrt von Köln nach Berlin am 01.05.2023</li>
-                <li>Fahrt von Hamburg nach München am 05.05.2023</li>
+                <!-- Weitere aktuelle Fahrten -->
+            </ul>
+        </section>
+
+        <section id="current-bookings">
+            <h2>Aktuelle Buchungen</h2>
+            <ul>
                 <!-- Weitere aktuelle Fahrten -->
             </ul>
         </section>
@@ -38,7 +44,36 @@
             </ul>
         </section>
     </main>
+    <script>
+        window.onload = function () {
+            // Laden der aktuellen Buchungen des Benutzers
+            fetch('/getCurrentBookings')
+                .then(response => response.json())
+                .then(bookings => {
+                    const currentBookingsList = document.getElementById('current-bookings').querySelector('ul');
+                    bookings.forEach(booking => {
+                        currentBookingsList.innerHTML += `
+                            <li>
+                                Fahrt von ${booking.startOrt} nach ${booking.zielOrt}:
+                                ${booking.personen} Personen, ${booking.raum} m², ${booking.gewicht} kg.
+                                Preis: ${booking.preis}€
+                            </li>`;
+                    });
+                })
+                .catch(error => console.error('Fehler beim Laden der aktuellen Buchungen:', error));
 
+            // Laden der aktuellen Angebote des Benutzers
+            fetch('/getCurrentOffers')
+                .then(response => response.json())
+                .then(offers => {
+                    const currentRidesList = document.getElementById('current-rides').querySelector('ul');
+                    offers.forEach(offer => {
+                        currentRidesList.innerHTML += `<li>Fahrt von ${offer.startOrt} nach ${offer.zielOrt} am ${offer.startZeit}</li>`;
+                    });
+                })
+                .catch(error => console.error('Fehler beim Laden der aktuellen Fahrten:', error));
+        };
+    </script>
     <footer>
         <p>© 2023 MyCargonaut</p>
     </footer>
