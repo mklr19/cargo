@@ -1,0 +1,35 @@
+#create-offer {
+    text-align: center;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#offerForm, #searchForm {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    margin: 0 auto; 
+}
+
+input,
+select,
+button {
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 14px;
+}
+
+button {
+    background-color: #b0e3e6; 
+    color: rgb(0, 0, 0);
+    border: 3px solid #0e8088;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+    button:hover {
+        background-color: #95c9cc; 
+        border: 3px solid #0a6168;
+    }

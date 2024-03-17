@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <title>MyCargonaut - Angebot erstellen</title>
+    <link rel="stylesheet" type="text/css" href="css/sides.css">
+    <link rel="stylesheet" type="text/css" href="css/offer.css">
+</head>
+<body class="dashboard">
+    <header>
+        <div class="header-container">
+            <img src="./img/Export/0.75x/semi_androidMyCargonautldpi.png" alt="MyCargonaut Logo" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Startseite</a></li>
+                    <li><a href="offers.html">Angebote</a></li>
+                    <li><a href="search.html">Suchanfragen</a></li>
+                    <li><a href="myrides.html">Meine Fahrten</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons-container">
+                <div class="icon-container">
+                    <a class="coin-icon-container" href="Payment.html">
+                        <img src="./img/coin.png" alt="Geld Icon">
+                    </a>
+                    <span id="currentBalance" class="balance">0€</span>
+                    <a class="nachricht-icon-container" href="OverviewChats.html">
+                        <img src="./img/nachricht.png" alt="Nachrichten Icon">
+                    </a>
+                </div>
+                <div class="profile-icon-container" onclick="toggleDropdown()">
+                    <img src="./img/profil.png" alt="Profil Icon" class="profile-icon">
+                    <div class="dropdown" id="profileDropdown">
+                        <a href="Profile.html">Mein Profil</a>
+                        <a href="vehicles.html">Fahrzeuge verwalten</a>
+                        <a href="logout.html">Abmelden</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="create-offer">
+            <h2>Neue Suchanfrage erstellen</h2>
+            <form id="searchForm">
+                <input type="date" id="startDatum" name="startDatum" required>
+                <input type="text" id="startOrt" name="startOrt" placeholder="Startort" required>
+                <input type="text" id="zielOrt" name="zielOrt" placeholder="Zielort" required>
+                <input type="number" id="personen" name="personen" placeholder="Personenanzahl" required>
+                <input type="number" id="raum" name="raum" placeholder="Benötigter Raum" required>
+                <input type="number" id="gewicht" name="gewicht" placeholder="Gewicht" required>
+                <button type="submit">Suchanfrage erstellen</button>
+            </form>
+        </section>
+    </main>
+    <footer class="footer">
+        <p>© 2023 MyCargonaut | <a href="support.html" style="color: white;">Support</a></p>
+    </footer>
+
+
+    <script>
+        function toggleDropdown() {
+            var dropdown = document.getElementById('profileDropdown');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        }
+
+        document.addEventListener('mouseup', function (event) {
+            var dropdown = document.getElementById('profileDropdown');
+            if (!dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('searchForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const formBody = new URLSearchParams(formData).toString();
+
+            fetch('/addSearch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formBody
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Suchanfrage erfolgreich erstellt');
+                        loadSearchRequests();  
+                    } else {
+                        throw new Error('Fehler beim Erstellen der Suchanfrage');
+                    }
+                })
+                .catch(error => {
+                    console.error('Fehler:', error);
+                });
+        });
+
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Angebotsdetails - MyCargonaut</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+    <header>
+    </header>
+
+    <main>
+        <div class="profile-container">
+            <div class="offer-layout">
+                <section id="offer-details" class="offer-details">
+                    <h2>Angebotsdetails</h2>
+                    <div id="details-container">
+                        <!-- Angebotsdetails werden hier eingefügt -->
+                    </div>
+                    <button onclick="location.href='dashboard.html'">Zurück zur Startseite</button>
+
+                </section>
+
+                <section id="bookings-section" class="bookings-section">
+                    <h2>Buchungen</h2>
+                    <ul id="booking-list">
+                        <!-- Buchungsliste wird hier eingefügt -->
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const offerId = urlParams.get('offerId');
+
+            if (offerId) {
+                fetch(`/getOfferDetails?offerId=${offerId}`)
+                    .then(response => response.json())
+                    .then(details => {
+                        const container = document.getElementById('details-container');
+                        container.innerHTML = `
+                                    <p><strong>Startort:</strong> ${details.startOrt}</p>
+                                    <p><strong>Zielort:</strong> ${details.zielOrt}</p>
+                                    <p><strong>Datum und Uhrzeit:</strong> ${details.startZeit}</p>
+                                    <p><strong>Preis pro Person:</strong> ${details.preisperson}€</p>
+                                    <p><strong>Preis pro Raum:</strong> ${details.preisraum}€</p>
+                                    <p><strong>Preis pro Gewicht:</strong> ${details.preisgewicht}€</p>
+                                    <p><strong>Verfügbare Sitzplätze:</strong> ${details.sitze}</p>
+                                    <p><strong>Stauraum:</strong> ${details.stauraum} m²</p>
+                                    <p><strong>Maximales Gewicht:</strong> ${details.maxgewicht} kg</p>
+                                    <!-- Weitere Details und Bedingungen hier einfügen -->
+                                `;
+
+                        // Laden der Buchungen für das Angebot
+                        loadBookings(offerId);
+                    })
+                    .catch(error => console.error('Fehler beim Laden der Angebotsdetails:', error));
+            }
+
+            document.getElementById('statusButton').addEventListener('click', function () {
+                if (confirm('Sind Sie sicher, dass Sie die Fahrt beenden möchten?')) {
+                    fetch(`/endOffer?offerId=${offerId}`, {
+                        method: 'POST'
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('Fahrt erfolgreich beendet.');
+                                window.location.reload(); // Seite neu laden oder Weiterleitung, um die Änderung zu reflektieren
+                            } else {
+                                alert('Fehler beim Beenden der Fahrt.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Fehler:', error);
+                            alert('Ein Fehler ist aufgetreten: ' + error.message);
+                        });
+                }
+            });
+
+            document.getElementById('deleteButton').addEventListener('click', function () {
+                if (confirm('Sind Sie sicher, dass Sie dieses Angebot löschen möchten?')) {
+                    fetch(`/deleteOffer?offerId=${offerId}`, { method: 'DELETE' })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('Angebot erfolgreich gelöscht.');
+                                window.location.href = 'dashboard.html';
+                            } else {
+                                alert('Fehler beim Löschen des Angebots.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Fehler:', error);
+                            alert('Ein Fehler ist aufgetreten: ' + error.message);
+                        });
+                }
+            });
+        });
+
+        function loadBookings(offerId) {
+            fetch(`/getBookingsForOffer?offerId=${offerId}`)
+                .then(response => response.json())
+                .then(bookings => {
+                    const bookingList = document.getElementById('booking-list');
+                    bookings.forEach(booking => {
+                        const bookingItem = document.createElement('div');
+                        bookingItem.innerHTML = `
+                    <p>Buchung von <a href="Profilextern.html?username=${encodeURIComponent(booking.benutzername)}">${booking.benutzername}</a>: ${booking.personen} Personen, ${booking.raum} m², ${booking.gewicht} kg, Preis: ${booking.preis}€</p>
+                    <form onsubmit="submitRating(event, ${booking.bookingId}, '${booking.benutzername}')">
+
+                        <label>Komplett: <input type="number" name="komplett" min="1" max="5" required></label>
+                        <label>Pünktlichkeit: <input type="number" name="punktlich" min="1" max="5" required></label>
+                        <label>Stimmung: <input type="number" name="mood" min="1" max="5" required></label>
+                        <label>Abmachung: <input type="number" name="abmachung" min="1" max="5" required></label>
+                        <button type="submit">Bewerten</button>
+                    </form>
+                `;
+                        bookingList.appendChild(bookingItem);
+                    });
+                })
+                .catch(error => console.error('Fehler beim Laden der Buchungen:', error));
+        }
+
+        function submitRating(event, bookingId, benutzername) {
+            event.preventDefault();
+            const form = event.target;
+
+            const formData = new FormData(form);
+            const ratingData = Object.fromEntries(formData.entries());
+            ratingData.benutzername = benutzername;
+
+            fetch('/submitMitfahrerRating', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(ratingData)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Bewertung erfolgreich abgegeben.');
+                        location.reload();
+                    } else {
+                        alert('Fehler beim Abgeben der Bewertung.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Fehler beim Abgeben der Bewertung:', error);
+                    alert('Ein Fehler ist aufgetreten: ' + error.message);
+                });
+}
+    </script>
+
+    <footer>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Buchungsdetails - MyCargonaut</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+    <header>
+        <!-- Ihr Header-Code hier -->
+    </header>
+
+    <main>
+        <div class="profile-container">
+            <section id="booking-details">
+                <h2>Buchungsdetails</h2>
+                <div id="details-container">
+                    <!-- Buchungsdetails werden hier eingefügt -->
+                </div>
+                <form id="ratingForm">
+                    <h3>Bewertung</h3>
+                    <label for="komplett">Komplett:</label>
+                    <input type="number" id="komplett" name="komplett" min="1" max="5" required>
+                    <label for="punktlich">Pünktlichkeit:</label>
+                    <input type="number" id="punktlich" name="punktlich" min="1" max="5" required>
+                    <label for="abmachung">Abmachungen:</label>
+                    <input type="number" id="abmachung" name="abmachung" min="1" max="5" required>
+                    <label for="fracht">Frachtzustand:</label>
+                    <input type="number" id="fracht" name="fracht" min="1" max="5" required>
+                    <label for="mood">Wohlbefinden:</label>
+                    <input type="number" id="mood" name="mood" min="1" max="5" required>
+                    <button type="submit">Bewertung absenden</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookingId = urlParams.get('bookingId');
+
+            if (bookingId) {
+                fetch(`/getBookingDetails?bookingId=${bookingId}`)
+                    .then(response => response.json())
+                    .then(details => {
+                        const container = document.getElementById('details-container');
+                        container.innerHTML = `
+                                <p><strong>Startort:</strong> ${details.startOrt}</p>
+                                <p><strong>Zielort:</strong> ${details.zielOrt}</p>
+                                <p><strong>Datum:</strong> ${details.startZeit}</p>
+                                <p><strong>Personen:</strong> ${details.personen}</p>
+                                <p><strong>Stauraum:</strong> ${details.raum} m²</p>
+                                <p><strong>Gewicht:</strong> ${details.gewicht} kg</p>
+                                <p><strong>Preis:</strong> ${details.preis}€</p>
+                                <button id="backToDashboard">Zurück zur Startseite</button>
+                            `;
+
+                        // Event Listener für den "Zurück zur Startseite" Button
+                        document.getElementById('backToDashboard').addEventListener('click', function () {
+                            window.location.href = 'dashboard.html';
+                        });
+
+                        // Event Listener für den "Stornieren" Button
+                        document.getElementById('cancelBooking').addEventListener('click', function () {
+                            if (confirm('Möchten Sie diese Buchung wirklich stornieren?')) {
+                                fetch(`/cancelBooking?bookingId=${bookingId}`, { method: 'DELETE' })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            alert('Buchung erfolgreich storniert');
+                                            window.location.href = 'dashboard.html';
+                                        } else {
+                                            alert('Fehler beim Stornieren der Buchung');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Fehler:', error);
+                                        alert('Ein Fehler ist aufgetreten: ' + error.message);
+                                    });
+                            }
+                        });
+                    })
+                    .catch(error => console.error('Fehler beim Laden der Buchungsdetails:', error));
+                document.getElementById('ratingForm').addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    const data = new URLSearchParams(new FormData(document.getElementById('ratingForm')));
+
+                    // Hinzufügen der bookingId zu URLSearchParams
+                    data.append('bookingid', bookingId);
+
+                    fetch('/submitRating', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: data,
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('Bewertung erfolgreich abgegeben.');
+                                window.location.href = 'dashboard.html';
+                            } else {
+                                throw new Error('Bewertung konnte nicht abgegeben werden.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Fehler:', error);
+                            alert('Ein Fehler ist aufgetreten: ' + error.message);
+                        });
+                });
+
+            }
+        });
+    </script>
+
+    <footer>
+    </footer>
+</body>
+</html>

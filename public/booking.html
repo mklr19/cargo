@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <title>Booking - MyCargonaut</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/booking.css">
 </head>
 <body>
 
@@ -65,13 +66,12 @@
                         offerDetailsData = data;
                         const detailsDiv = document.getElementById('offerDetails');
                         detailsDiv.innerHTML = `
-                  <p>Angebot von: ${data.benutzername}</p>
-                        <p>ID: ${data.offerId}</p>
+                        <p>Angebot von: <a class="profile-link" href="Profilextern.html?username=${encodeURIComponent(data.benutzername)}">${data.benutzername}</a></p>
                         <p>Startort: ${data.startOrt}, Zielort: ${data.zielOrt}</p>
                         <p>Startdatum: ${data.startZeit}</p>
-                        <p>Preise:</p>
+                        <p><strong>Preise:</strong></p>
                         <p>pro Person: ${data.preisperson}€, pro m²: ${data.preisraum}€, pro kg: ${data.preisgewicht}€</p>
-                        <p>Verfügbarkeit:</p>
+                        <p><strong>Verfügbarkeit:</strong></p>
                         <p>Plätze: ${data.sitze}, Stauraum: ${data.stauraum}m², Gewicht: ${data.maxgewicht}kg</p>
                     `;
                     })
@@ -105,7 +105,7 @@
 
                 // Überprüfen, ob die Buchungsanfrage zulässig ist
                 if (persons > offerDetailsData.sitze || storageSpace > offerDetailsData.stauraum || weight > offerDetailsData.maxgewicht) {
-                    alert('Buchung nicht möglich: Zu viele Plätze, Raum oder Gewicht angefordert. test');
+                    alert('Buchung nicht möglich: Zu viele Plätze, Raum oder Gewicht angefordert.');
                     return;
                 }
                 const totalPrice = (persons * offerDetailsData.preisperson) + (storageSpace * offerDetailsData.preisraum) + (weight * offerDetailsData.preisgewicht);

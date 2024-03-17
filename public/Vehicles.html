@@ -2,76 +2,271 @@
 <html>
 <head>
     <title>Fahrzeugverwaltung - MyCargonaut</title>
-    <link rel="stylesheet" type="text/css" href="css/dashboard.css">
+    <link rel="stylesheet" type="text/css" href="css/sides.css">
+    <link rel="stylesheet" type="text/css" href="css/vehicle.css">
 </head>
 <body class="dashboard">
     <header>
-        <nav>
-            <ul>
-                <li><a href="dashboard.html">Startseite</a></li>
-                <li><a href="profile.html">Profil</a></li>
-                <li><a href="vehicles.html">Fahrzeugverwaltung</a></li>
-                <li><a href="offers.html">Angebote</a></li>
-                <li><a href="search.html">Suchanfragen</a></li>
-                <li><a href="myrides.html">Meine Fahrten</a></li>
-                <li><a href="support.html">Support</a></li>
-                <li><a href="logout.html">Abmelden</a></li>
-            </ul>
-        </nav>
+        <div class="header-container">
+            <img src="./img/Export/0.75x/semi_androidMyCargonautldpi.png" alt="MyCargonaut Logo" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Startseite</a></li>
+                    <li><a href="offers.html">Angebote</a></li>
+                    <li><a href="search.html">Suchanfragen</a></li>
+                    <li><a href="myrides.html">Meine Fahrten</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons-container">
+                <div class="icon-container">
+                    <a class="coin-icon-container" href="Payment.html">
+                        <img src="./img/coin.png" alt="Geld Icon">
+                    </a>
+                    <span id="currentBalance" class="balance">0€</span>
+                    <a class="nachricht-icon-container" href="OverviewChats.html">
+                        <img src="./img/nachricht.png" alt="Nachrichten Icon">
+                    </a>
+                </div>
+                <div class="profile-icon-container" onclick="toggleDropdown()">
+                    <img src="./img/profil.png" alt="Profil Icon" class="profile-icon">
+                    <div class="dropdown" id="profileDropdown">
+                        <a href="Profile.html">Mein Profil</a>
+                        <a href="vehicles.html">Fahrzeuge verwalten</a>
+                        <a href="logout.html">Abmelden</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
 
     <main>
         <section id="existingVehicles">
-            <h2>Meine Fahrzeuge:</h2>
-            <div id="vehicleList">
-                <!-- Fahrzeuge werden hier aufgelistet -->
+            <div class="border">
+                <h2>Meine Fahrzeuge:</h2>
+
+                <div id="button">
+                    <button id="vehiclebut" class="custom-button" onclick="openModal()">Neues Fahrzeug hinzufügen</button>
+
+                </div>
+                <div id="vehicleList">
+                    <!-- Fahrzeuge werden hier aufgelistet -->
+                </div>
             </div>
         </section>
-        <section class="vehicle-container">
-            <h2>Neues Fahrzeug erstellen:</h2>
-            <form method="POST" action="/addVehicle">
-                <div class="input-group">
-                    <label for="brand">Marke:</label>
-                    <input type="text" id="brand" name="brand" required>
-                </div>
-                <div class="input-group">
-                    <label for="modell">Modell:</label>
-                    <input type="text" id="modell" name="modell" required>
-                </div>
-                <div class="input-group">
-                    <label for="color">Farbe:</label>
-                    <input type="text" id="color" name="color" required>
-                </div>
-                <div class="input-group">
-                    <label for="consumption">Verbrauch:</label>
-                    <input type="text" id="consumption" name="consumption" required>
-                </div>
-                <div class="input-group">
-                    <label for="seats">Sitzplätze:</label>
-                    <input type="number" id="seats" name="seats" required>
-                </div>
-                <div class="input-group">
-                    <label for="doors">Türen:</label>
-                    <input type="number" id="doors" name="doors" required>
-                </div>
-                <div class="input-group">
-                    <label for="trunkspace">Stauraum:</label>
-                    <input type="text" id="trunkspace" name="trunkspace" required>
-                </div>
-                <div class="input-group">
-                    <label for="gewicht">Maximales Gewicht:</label>
-                    <input type="text" id="gewicht" name="gewicht" required>
-                </div>
-                <div class="input-group">
-                    <label for="sonder">Sonderfunktion:</label>
-                    <input type="text" id="sonder" name="sonder" required>
-                </div>
-                <button type="submit">Fahrzeugdaten speichern</button>
-            </form>
-        </section>
+
+
+        <div id="addVehicleModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <section class="vehicle-container">
+                    <h2>Neues Fahrzeug hinzufügen:</h2>
+                    <form method="POST" action="/addVehicle">
+
+
+                        <div class="input-group">
+                            <label for="brand">Marke:</label>
+                            <input type="text" id="brand" name="brand" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="modell">Modell:</label>
+                            <input type="text" id="modell" name="modell" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="color">Farbe:</label>
+                            <input type="text" id="color" name="color" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="consumption">Verbrauch:</label>
+                            <input type="text" id="consumption" name="consumption" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="seats">Sitzplätze:</label>
+                            <input type="number" id="seats" name="seats" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="doors">Türen:</label>
+                            <input type="number" id="doors" name="doors" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="trunkspace">Stauraum:</label>
+                            <input type="text" id="trunkspace" name="trunkspace" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="gewicht">Maximales Gewicht:</label>
+                            <input type="text" id="gewicht" name="gewicht" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="sonder">Sonderfunktion:</label>
+                            <input type="text" id="sonder" name="sonder" required>
+                        </div>
+                        <button type="submit">Fahrzeugdaten speichern</button>
+
+                    </form>
+                </section>
+            </div>
+        </div>
+
+        <div id="changeVehicleModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeChangeModal()">&times;</span>
+                <section class="vehicle-container">
+                    <h2>Fahrzeug bearbeiten:</h2>
+                    <form id="updateVehicleForm" method="POST" action="/updateVehicle">
+
+
+                        <div class="input-group">
+                            <label for="changebrand">Marke:</label>
+                            <input type="text" id="changebrand" name="changebrand" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="changemodell">Modell:</label>
+                            <input type="text" id="changemodell" name="changemodell" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="changecolor">Farbe:</label>
+                            <input type="text" id="changecolor" name="changecolor" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="changeconsumption">Verbrauch:</label>
+                            <input type="text" id="changeconsumption" name="changeconsumption" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="changeseats">Sitzplätze:</label>
+                            <input type="number" id="changeseats" name="changeseats" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="changedoors">Türen:</label>
+                            <input type="number" id="changedoors" name="changedoors" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="changetrunkspace">Stauraum:</label>
+                            <input type="text" id="changetrunkspace" name="changetrunkspace" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="changegewicht">Maximales Gewicht:</label>
+                            <input type="text" id="changegewicht" name="changegewicht" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="changesonder">Sonderfunktion:</label>
+                            <input type="text" id="changesonder" name="changesonder" required>
+                        </div>
+                        <button type="submit">Fahrzeugdaten ändern</button>
+
+                    </form>
+                </section>
+            </div>
+        </div>
+
     </main>
+    <footer class="footer">
+        <p>© 2023 MyCargonaut | <a href="support.html" style="color: white;">Support</a></p>
+    </footer>
 
     <script>
+
+        document.getElementById('updateVehicleForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Verhindert das Neuladen der Seite
+
+            const carId = document.getElementById('changeVehicleModal').getAttribute('data-carId');
+            
+            // Hier deine Input-Felder auslesen
+            const formData = {
+                brand: document.getElementById('changebrand').value,
+                modell: document.getElementById('changemodell').value,
+                color: document.getElementById('changecolor').value,
+                consumption: document.getElementById('changeconsumption').value,
+                seats: document.getElementById('changeseats').value,
+                doors: document.getElementById('changedoors').value,
+                trunkspace: document.getElementById('changetrunkspace').value,
+                gewicht: document.getElementById('changegewicht').value,
+                sonder: document.getElementById('changesonder').value,
+            };
+
+            // Senden einer PUT-Anfrage mit Fetch
+            try {
+                const response = await fetch(`/updateVehicle/${carId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+
+                if (response.ok) {
+                    alert('Fahrzeug erfolgreich aktualisiert');
+                    window.location.reload(); // Seite neu laden oder entsprechend anpassen
+                } else {
+                    const errorMessage = await response.text();
+                    alert('Fehler beim Aktualisieren: ' + errorMessage);
+                }
+            } catch (error) {
+                console.error('Fehler:', error);
+                alert('Ein Fehler ist aufgetreten');
+            }
+        });
+
+
+        function toggleDropdown() {
+            var dropdown = document.getElementById('profileDropdown');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        }
+
+        document.addEventListener('mouseup', function (event) {
+            var dropdown = document.getElementById('profileDropdown');
+            if (!dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+        
+        function openModal() {
+            var modal = document.getElementById('addVehicleModal');
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            var modal = document.getElementById('addVehicleModal');
+            modal.style.display = 'none';
+        }
+
+        function openChangeModal(element) {
+   
+            // Fahrzeugdaten aus den Datenattributen extrahieren
+            const carId = element.getAttribute('data-car-id');
+            const brand = element.getAttribute('data-brand');
+            const model = element.getAttribute('data-model');
+            const color = element.getAttribute('data-color');
+            const consumption = element.getAttribute('data-consumption');
+            const seats = element.getAttribute('data-seats');
+            const doors = element.getAttribute('data-doors');
+            const trunkspace = element.getAttribute('data-trunkspace');
+            const gewicht = element.getAttribute('data-gewicht');
+            const sonder = element.getAttribute('data-sonder');
+
+            // Werte in den Formularfeldern des "Fahrzeug bearbeiten" Modals setzen
+            document.getElementById('changeVehicleModal').setAttribute('data-carId', carId);
+            document.getElementById('changebrand').value = brand;
+            document.getElementById('changemodell').value = model;
+            document.getElementById('changecolor').value = color;
+            document.getElementById('changeconsumption').value = consumption;
+            document.getElementById('changeseats').value = seats;
+            document.getElementById('changedoors').value = doors;
+            document.getElementById('changetrunkspace').value = trunkspace;
+            document.getElementById('changegewicht').value = gewicht;
+            document.getElementById('changesonder').value = sonder;
+
+            // Modal anzeigen
+            var modal = document.getElementById('changeVehicleModal');
+            modal.style.display = 'block';
+        }
+
+        function closeChangeModal() {
+            var modal = document.getElementById('changeVehicleModal');
+            modal.style.display = 'none';
+        }
+
+        function getVehicleDetails(carId) {
+           
+            return `<p>Fahrzeugdetails für ID ${carId}</p>`;
+        }
+
         function deleteVehicle(carId) {
             fetch(`/deleteVehicle/${carId}`, { method: 'DELETE' })
                 .then(response => {
@@ -90,22 +285,59 @@
                 .then(vehicles => {
                     const vehicleList = document.getElementById('vehicleList');
                     vehicleList.innerHTML = '';
+
                     vehicles.forEach(vehicle => {
-                        vehicleList.innerHTML += `
-                                <p>
-                                    ${vehicle.marke} ${vehicle.modell} - Farbe: ${vehicle.farbe}, Verbrauch: ${vehicle.verbrauch}, Sitzplätze: ${vehicle.sitze}, Türen: ${vehicle.tueren}, Stauraum: ${vehicle.stauraum}, Max. Gewicht: ${vehicle.maxgewicht}, , Sonderfunktion: ${vehicle.sonderfunktion}
-                                    <button onclick="deleteVehicle(${vehicle.carId})">Löschen</button>
-                                </p>`;
+                        const vehicleContainer = document.createElement('div');
+                        vehicleContainer.classList.add('vehicle-item');
+
+                        vehicleContainer.innerHTML = `
+                        <div class="vehicle-info">
+                            <span>${vehicle.marke} ${vehicle.modell}</span>
+                            <span class="details">Farbe: ${vehicle.farbe}, Verbrauch: ${vehicle.verbrauch}, Sitzplätze: ${vehicle.sitze}, Türen: ${vehicle.tueren}, Stauraum: ${vehicle.stauraum}, Max. Gewicht: ${vehicle.maxgewicht}, Sonderfunktion: ${vehicle.sonderfunktion}</span>
+                            <button class="delete-button" onclick="deleteVehicle(${vehicle.carId})">Löschen</button>
+                            <button class="change-button" onclick="openChangeModal(this)" 
+                                data-car-id="${vehicle.carId}" 
+                                data-brand="${vehicle.marke}" 
+                                data-model="${vehicle.modell}"
+                                data-color="${vehicle.farbe}"
+                                data-consumption="${vehicle.verbrauch}"
+                                data-seats="${vehicle.sitze}"
+                                data-doors="${vehicle.tueren}"
+                                data-trunkspace="${vehicle.stauraum}"
+                                data-gewicht="${vehicle.maxgewicht}"
+                                data-sonder="${vehicle.sonderfunktion}">Bearbeiten</button>
+
+
+                        </div>`;
+
+                        vehicleList.appendChild(vehicleContainer);
                     });
                 })
                 .catch(error => console.error('Fehler beim Laden der Fahrzeuge:', error));
         }
 
-        window.onload = loadVehicles;
+        async function loadUserData() {
+        try {
+            const response = await fetch('/getUserData');
+            if (!response.ok) throw new Error('Fehler beim Laden der Benutzerdaten');
+
+            const userData = await response.json();
+
+            const currentBalanceElement = document.getElementById('currentBalance');
+            if (currentBalanceElement) {
+                currentBalanceElement.textContent = `${userData.geld}€`;
+            }
+        } catch (err) {
+            console.error('Fehler:', err);
+        }
+    };
+
+
+    window.onload = () => {
+        loadUserData();
+        loadVehicles();
+    };
     </script>
 
-    <footer>
-        <p>© 2023 MyCargonaut</p>
-    </footer>
 </body>
 </html>

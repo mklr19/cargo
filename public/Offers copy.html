@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Angebote und Suchanfragen - MyCargonaut</title>
+    <link rel="stylesheet" type="text/css" href="css/sides.css">
+    <link rel="stylesheet" type="text/css" href="css/offers.css">
+</head>
+<body class="dashboard">
+    <header>
+        <div class="header-container">
+            <img src="./img/Export/0.75x/semi_androidMyCargonautldpi.png" alt="MyCargonaut Logo" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Startseite</a></li>
+                    <li><a href="offers.html">Angebote</a></li>
+                    <li><a href="search.html">Suchanfragen</a></li>
+                    <li><a href="myrides.html">Meine Fahrten</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons-container">
+                <div class="icon-container">
+                    <a class="coin-icon-container" href="Payment.html">
+                        <img src="./img/coin.png" alt="Geld Icon">
+                    </a>
+                    <span id="currentBalance" class="balance">0€</span>
+                    <a class="nachricht-icon-container" href="OverviewChats.html">
+                        <img src="./img/nachricht.png" alt="Nachrichten Icon">
+                    </a>
+                </div>
+                <div class="profile-icon-container" onclick="toggleDropdown()">
+                    <img src="./img/profil.png" alt="Profil Icon" class="profile-icon">
+                    <div class="dropdown" id="profileDropdown">
+                        <a href="Profile.html">Mein Profil</a>
+                        <a href="vehicles.html">Fahrzeuge verwalten</a>
+                        <a href="logout.html">Abmelden</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="offer-filter">
+            <h2>Fahrten filtern</h2>
+            <form id="filterForm">
+                <input type="text" id="filterStartOrt" name="filterStartOrt" placeholder="Startort">
+                <input type="text" id="filterZielOrt" name="filterZielOrt" placeholder="Zielort">
+                <input type="date" id="filterDatum" name="filterDatum">
+                <input type="text" id="number" name="number" placeholder="Anzahl der Mitfahrer">
+                <input type="text" id="weight" name="weight" placeholder="Gewicht ab">
+                <button type="submit">Filtern</button>
+            </form>
+        </section>
+
+        <section id="ride-offers">
+            <div class="header-content">
+                <h2>Angebotene Fahrten</h2>
+                <div class="offer-content">
+                    <button onclick="location.href='NewOffer.html'">Eigene Fahrt anbieten</button>
+                </div>
+            </div>
+            <ul id="offersList">
+                <!-- Angebote werden hier geladen -->
+            </ul>
+        </section>
+    </main>
+    <footer class="footer">
+        <p>© 2023 MyCargonaut | <a href="support.html" style="color: white;">Support</a></p>
+    </footer>
+
+    <script>
+        function toggleDropdown() {
+            var dropdown = document.getElementById('profileDropdown');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        }
+
+        document.addEventListener('mouseup', function (event) {
+            var dropdown = document.getElementById('profileDropdown');
+            if (!dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+
+        window.onload = async () => {
+            try {
+                const response = await fetch('/getUserData');
+                if (!response.ok) throw new Error('Fehler beim Laden der Benutzerdaten');
+
+                const userData = await response.json();
+
+                const currentBalanceElement = document.getElementById('currentBalance');
+                if (currentBalanceElement) {
+                    currentBalanceElement.textContent = `${userData.geld}€`;
+                }
+
+             
+              
+            } catch (err) {
+                console.error('Fehler:', err);
+            }
+        };
+        
+       
+        document.getElementById('filterForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const startOrt = document.getElementById('filterStartOrt').value;
+            const zielOrt = document.getElementById('filterZielOrt').value;
+            const filterDatum = document.getElementById('filterDatum').value;
+
+            fetch(`/getFilteredOffers?startOrt=${encodeURIComponent(startOrt)}&zielOrt=${encodeURIComponent(zielOrt)}&filterDatum=${encodeURIComponent(filterDatum)}`)
+                .then(response => response.json())
+                .then(offers => {
+                    const offersList = document.getElementById('offersList');
+                    offersList.innerHTML = ''; // Leeren der Liste vor dem Hinzufügen der gefilterten Angebote
+
+                    offers.forEach(offer => {
+                        offersList.innerHTML += `
+                    <li class=offer-item>
+                        <a href="Profilextern.html?username=${encodeURIComponent(offer.benutzername)}">${offer.benutzername}</a> bietet Fahrt von ${offer.startOrt} nach ${offer.zielOrt} am ${offer.startZeit}.
+                        Preis pro Person: ${offer.preisperson}€, Preis pro Raum: ${offer.preisraum}€, Preis pro Gewicht: ${offer.preisgewicht}€,
+                        Plätze: ${offer.sitze}, Stauraum: ${offer.stauraum}m², Max. Gewicht: ${offer.maxgewicht}kg
+                        <button onclick="bookOffer(${offer.offerId})">Buchen</button>
+                    </li>`;
+                    });
+                })
+                .catch(error => {
+                    console.error('Fehler beim Filtern der Angebote:', error);
+                });
+        });
+
+        function bookOffer(offerId) {
+            window.location.href = `booking.html?offerId=${offerId}`;
+        }
+        // Funktion zum Hinzufügen eines Angebots zur Liste
+        function addOfferToList(offer) {
+            const offersList = document.getElementById('offersList');
+            const offerItem = document.createElement('li');
+            offerItem.classList.add('offer-item');
+
+            offerItem.innerHTML = `
+                <a href="Profilextern.html?username=${encodeURIComponent(offer.benutzername)}">${offer.benutzername}</a> bietet Fahrt von ${offer.startOrt} nach ${offer.zielOrt} am ${offer.startZeit}.
+                Preis pro Person: ${offer.preisperson}€, Preis pro Raum: ${offer.preisraum}€, Preis pro Gewicht: ${offer.preisgewicht}€,
+                Plätze: ${offer.sitze}, Stauraum: ${offer.stauraum}m², Max. Gewicht: ${offer.maxgewicht}kg
+                <button onclick="bookOffer(${offer.offerId})">Buchen</button>`;
+
+            offersList.appendChild(offerItem);
+        }
+
+        // Laden aller vorhandenen Angebote
+        fetch('/getAllOffers')
+            .then(response => response.json())
+            .then(offers => {
+                offers.forEach(offer => {
+                    addOfferToList(offer);
+                });
+            })
+            .catch(error => console.error('Fehler beim Laden der Angebote:', error));
+
+    </script>
+</body>
+</html>

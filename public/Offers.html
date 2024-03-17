@@ -2,22 +2,41 @@
 <html>
 <head>
     <title>Angebote und Suchanfragen - MyCargonaut</title>
-    <link rel="stylesheet" type="text/css" href="css/dashboard.css">
+    <link rel="stylesheet" type="text/css" href="css/sides.css">
+    <link rel="stylesheet" type="text/css" href="css/offers.css">
 </head>
 <body class="dashboard">
     <header>
-        <nav>
-            <ul>
-                <li><a href="dashboard.html">Startseite</a></li>
-                <li><a href="profile.html">Profil</a></li>
-                <li><a href="vehicles.html">Fahrzeugverwaltung</a></li>
-                <li><a href="offers.html">Angebote</a></li>
-                <li><a href="search.html">Suchanfragen</a></li>
-                <li><a href="myrides.html">Meine Fahrten</a></li>
-                <li><a href="support.html">Support</a></li>
-                <li><a href="logout.html">Abmelden</a></li>
-            </ul>
-        </nav>
+        <div class="header-container">
+            <img src="./img/Export/0.75x/semi_androidMyCargonautldpi.png" alt="MyCargonaut Logo" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Startseite</a></li>
+                    <li><a href="offers.html">Angebote</a></li>
+                    <li><a href="search.html">Suchanfragen</a></li>
+                    <li><a href="myrides.html">Meine Fahrten</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons-container">
+                <div class="icon-container">
+                    <a class="coin-icon-container" href="Payment.html">
+                        <img src="./img/coin.png" alt="Geld Icon">
+                    </a>
+                    <span id="currentBalance" class="balance">0€</span>
+                    <a class="nachricht-icon-container" href="OverviewChats.html">
+                        <img src="./img/nachricht.png" alt="Nachrichten Icon">
+                    </a>
+                </div>
+                <div class="profile-icon-container" onclick="toggleDropdown()">
+                    <img src="./img/profil.png" alt="Profil Icon" class="profile-icon">
+                    <div class="dropdown" id="profileDropdown">
+                        <a href="Profile.html">Mein Profil</a>
+                        <a href="vehicles.html">Fahrzeuge verwalten</a>
+                        <a href="logout.html">Abmelden</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
 
     <main>
@@ -27,131 +46,201 @@
                 <input type="text" id="filterStartOrt" name="filterStartOrt" placeholder="Startort">
                 <input type="text" id="filterZielOrt" name="filterZielOrt" placeholder="Zielort">
                 <input type="date" id="filterDatum" name="filterDatum">
+                <input type="text" id="number" name="number" placeholder="Anzahl der Mitfahrer">
+                <input type="text" id="weight" name="weight" placeholder="Gewicht ab">
                 <button type="submit">Filtern</button>
             </form>
         </section>
 
         <section id="ride-offers">
-            <h2>Angebotene Fahrten</h2>
-            <ul id="offersList">
-                <!-- Angebote werden hier geladen -->
-            </ul>
-        </section>
+            <div class="header-content">
+                <h2>Angebotene Fahrten</h2>
+                <div class="offer-content">
+                    <button onclick="location.href='NewOffer.html'">Eigene Fahrt anbieten</button>
+                </div>
+            </div>
+            <div class="border">
+                <div class="offers-grid" id="offersList">
+                    <!-- Angebote werden hier geladen -->
+                </div>
+            </div>
 
-        <section id="create-offer">
-            <h2>Neue Fahrt anbieten</h2>
-            <form id="offerForm">
-                <input type="text" id="startOrt" name="startOrt" placeholder="Startort" required>
-                <input type="text" id="zielOrt" name="zielOrt" placeholder="Zielort" required>
-                <input type="date" id="startZeit" name="startZeit" required>
-                <input type="number" id="preisperson" name="preisperson" placeholder="Preis pro Person (z.B. 5.00)" step="0.01" required>
-                <input type="number" id="preisraum" name="preisraum" placeholder="Preis pro Raum (z.B. 2.50)" step="0.01" required>
-                <input type="number" id="preisgewicht" name="preisgewicht" placeholder="Preis pro Gewicht (z.B. 1.75)" step="0.01" required>
-                <input type="number" id="sitze" name="sitze" placeholder="Plätze" required>
-                <input type="number" id="stauraum" name="stauraum" placeholder="Stauraum" required>
-                <input type="number" id="mgewi" name="mgewi" placeholder="maximal Gewicht" required>
-                <select id="carId" name="carId">
-                    <!-- Fahrzeuge werden hier eingefügt -->
-                </select>
-                <button type="submit">Fahrt anbieten</button>
-            </form>
         </section>
     </main>
+    <footer class="footer">
+        <p>© 2023 MyCargonaut | <a href="support.html" style="color: white;">Support</a></p>
+    </footer>
+
+    <div id="chatModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Nachricht an <span id="chatWithUsername"></span></p>
+            <textarea id="chatMessage" placeholder="Schreibe eine Nachricht..."></textarea>
+            <input type="hidden" id="chatUsername">
+            <button id="sendChatMessage">Senden</button>
+        </div>
+    </div>
 
     <script>
-        window.onload = function () {
-            // Laden der Fahrzeuge des Benutzers
-            fetch('/getVehicles')
-                .then(response => response.json())
-                .then(vehicles => {
-                    const vehicleSelect = document.getElementById('carId');
-                    vehicles.forEach(vehicle => {
-                        const option = document.createElement('option');
-                        option.value = vehicle.carId;
-                        option.textContent = `${vehicle.marke} ${vehicle.modell}`;
-                        vehicleSelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Fehler beim Laden der Fahrzeuge:', error));
+        function toggleDropdown() {
+            var dropdown = document.getElementById('profileDropdown');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        }
 
-            // Formularverarbeitung für das Hinzufügen eines Angebots
-            document.getElementById('offerForm').addEventListener('submit', function (event) {
-                event.preventDefault();
-                const formData = new FormData(this);
-                const formBody = new URLSearchParams(formData).toString();
+        document.addEventListener('mouseup', function (event) {
+            var dropdown = document.getElementById('profileDropdown');
+            if (!dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
 
-                fetch('/addOffer', {
+        // Funktion zum Öffnen des Chat-Fensters
+        function openChat(username) {
+            document.getElementById('chatWithUsername').textContent = username;
+            document.getElementById('chatUsername').value = username;
+            document.getElementById('chatModal').style.display = "block";
+        }
+
+
+        document.getElementsByClassName("close")[0].onclick = function () {
+            document.getElementById('chatModal').style.display = "none";
+        }
+
+
+        window.onclick = function (event) {
+            if (event.target == document.getElementById('chatModal')) {
+                document.getElementById('chatModal').style.display = "none";
+            }
+        }
+
+        document.getElementById('sendChatMessage').addEventListener('click', async function () {
+            let message = document.getElementById('chatMessage').value;
+            let receiverUsername = document.getElementById('chatUsername').value;
+
+            if (message.trim() === "") {
+                alert("Bitte eine Nachricht eingeben.");
+                return;
+            }
+
+
+            const data = new URLSearchParams();
+            data.append('receiverUsername', receiverUsername);
+            data.append('messageText', message);
+
+            try {
+                const response = await fetch('/sendMessageUsingUsername', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: formBody
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            alert('Angebot erfolgreich erstellt');
-                            // Optionale Aktualisierung der Angebotsliste oder Umleitung
-                        } else {
-                            throw new Error('Fehler beim Erstellen des Angebots');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Fehler:', error);
-                    });
-            });
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: data
+                });
 
-            // Laden aller vorhandenen Angebote
-            fetch('/getAllOffers')
-                .then(response => response.json())
-                .then(offers => {
-                    const offersList = document.getElementById('offersList');
-                    offers.forEach(offer => {
-                        offersList.innerHTML += `
-                <li>
-                    ${offer.benutzername} bietet Fahrt von ${offer.startOrt} nach ${offer.zielOrt} am ${offer.startZeit}.
-                    Preis pro Person: ${offer.preisperson}€,Preis pro Raum: ${offer.preisraum}€,Preis pro Gewicht: ${offer.preisgewicht}€, Plätze: ${offer.sitze}, Stauraum: ${offer.stauraum}m², Max. Gewicht: ${offer.maxgewicht}kg
-                    <button onclick="bookOffer(${offer.offerId})">Buchen</button>
-                </li>`;
-                    });
-                })
-                .catch(error => console.error('Fehler beim Laden der Angebote:', error));
+                if (!response.ok) throw new Error('Nachricht konnte nicht gesendet werden');
+
+                alert('Nachricht erfolgreich gesendet');
+                document.getElementById('chatModal').style.display = "none";
+                document.getElementById('chatMessage').value = '';
+            } catch (error) {
+                console.error('Fehler beim Senden der Nachricht:', error);
+                alert('Fehler beim Senden der Nachricht');
+            }
+        });
+
+        window.onload = async () => {
+            try {
+                const response = await fetch('/getUserData');
+                if (!response.ok) throw new Error('Fehler beim Laden der Benutzerdaten');
+
+                const userData = await response.json();
+
+                const currentBalanceElement = document.getElementById('currentBalance');
+                if (currentBalanceElement) {
+                    currentBalanceElement.textContent = `${userData.geld}€`;
+                }
+
+
+
+            } catch (err) {
+                console.error('Fehler:', err);
+            }
         };
 
+
         document.getElementById('filterForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const startOrt = document.getElementById('filterStartOrt').value;
-            const zielOrt = document.getElementById('filterZielOrt').value;
-            const filterDatum = document.getElementById('filterDatum').value;
+        event.preventDefault();
 
-            fetch(`/getFilteredOffers?startOrt=${encodeURIComponent(startOrt)}&zielOrt=${encodeURIComponent(zielOrt)}&filterDatum=${encodeURIComponent(filterDatum)}`)
-                .then(response => response.json())
-                .then(offers => {
-                    const offersList = document.getElementById('offersList');
-                    offersList.innerHTML = ''; // Leeren der Liste vor dem Hinzufügen der gefilterten Angebote
+        const startOrt = document.getElementById('filterStartOrt').value;
+        const zielOrt = document.getElementById('filterZielOrt').value;
+        const filterDatum = document.getElementById('filterDatum').value;
 
-                    offers.forEach(offer => {
-                        offersList.innerHTML += `
-                    <li>
-                        ${offer.benutzername} bietet Fahrt von ${offer.startOrt} nach ${offer.zielOrt} am ${offer.startZeit}.
-                        Preis pro Person: ${offer.preisperson}€, Preis pro Raum: ${offer.preisraum}€, Preis pro Gewicht: ${offer.preisgewicht}€,
-                        Plätze: ${offer.sitze}, Stauraum: ${offer.stauraum}m², Max. Gewicht: ${offer.maxgewicht}kg
-                        <button onclick="bookOffer(${offer.offerId})">Buchen</button>
-                    </li>`;
-                    });
-                })
-                .catch(error => {
-                    console.error('Fehler beim Filtern der Angebote:', error);
+        fetch(`/getFilteredOffers?startOrt=${encodeURIComponent(startOrt)}&zielOrt=${encodeURIComponent(zielOrt)}&filterDatum=${encodeURIComponent(filterDatum)}`)
+            .then(response => response.json())
+            .then(offers => {
+                const offersList = document.getElementById('offersList');
+                offersList.innerHTML = '';
+
+                offers.forEach(offer => {
+                    const offerItem = document.createElement('li');
+                    offerItem.classList.add('offer-item');
+                    const offerContent = `
+                        <div class="offer-info">
+                            <p><strong>Benutzername:</strong> <a href="Profilextern.html?username=${encodeURIComponent(offer.benutzername)}">${offer.benutzername}</a></p>
+                            <p><strong>Startort:</strong> ${offer.startOrt}</p>
+                            <p><strong>Zielort:</strong> ${offer.zielOrt}</p>
+                            <p><strong>Startzeit:</strong> ${offer.startZeit}</p>
+                            <p><strong>Plätze:</strong> ${offer.sitze}</p>
+                            <p><strong>Stauraum:</strong> ${offer.stauraum}m²</p>
+                            <p><strong>Max. Gewicht:</strong> ${offer.maxgewicht}kg</p>
+                        </div>
+                        <button class="book-button" onclick="bookOffer(${offer.offerId})">Buchen</button>
+                        <button class="chat-button" onclick="openChat('${offer.benutzername}')">Kontaktieren</button>
+
+                    `;
+
+                    offerItem.innerHTML = offerContent;
+                    offersList.appendChild(offerItem);
                 });
-        });
+            })
+            .catch(error => {
+                console.error('Fehler beim Filtern der Angebote:', error);
+            });
+    });
 
         function bookOffer(offerId) {
             window.location.href = `booking.html?offerId=${offerId}`;
         }
+        // Funktion zum Hinzufügen eines Angebots zur Liste
+        function addOfferToList(offer) {
+            const offersList = document.getElementById('offersList');
+            const offerItem = document.createElement('li');
+            offerItem.classList.add('offer-item');
+
+            offerItem.innerHTML = `
+                <div class="offer-info">
+                    <p><strong>Benutzername:</strong> <a href="Profilextern.html?username=${encodeURIComponent(offer.benutzername)}">${offer.benutzername}</a></p>
+                    <p><strong>Startort:</strong> ${offer.startOrt}</p>
+                    <p><strong>Zielort:</strong> ${offer.zielOrt}</p>
+                    <p><strong>Startzeit:</strong> ${offer.startZeit}</p>
+                    <p><strong>Plätze:</strong> ${offer.sitze}</p>
+                    <p><strong>Stauraum:</strong> ${offer.stauraum}m²</p>
+                    <p><strong>Max. Gewicht:</strong> ${offer.maxgewicht}kg</p>
+                </div>
+                <button class="book-button" onclick="bookOffer(${offer.offerId})">Buchen</button>
+                <button class="chat-button" onclick="openChat('${offer.benutzername}')">Kontaktieren</button>`; // Hinzufügen des Chatten-Buttons
+
+            offersList.appendChild(offerItem);
+        }
+
+
+
+        // Laden aller vorhandenen Angebote
+        fetch('/getAllOffers')
+            .then(response => response.json())
+            .then(offers => {
+                offers.forEach(offer => {
+                    addOfferToList(offer);
+                });
+            })
+            .catch(error => console.error('Fehler beim Laden der Angebote:', error));
     </script>
-
-
-    <footer>
-        <p>© 2023 MyCargonaut</p>
-    </footer>
 </body>
 </html>

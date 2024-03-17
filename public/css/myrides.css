@@ -1,0 +1,145 @@
+
+.myrides-section {
+    margin-bottom: 20px;
+}
+
+.myrides-list {
+    
+    list-style-type: none;
+    padding: 0;
+}
+
+.myrides-item {
+    
+    list-style-type: none;
+    background-color: #f9f9f9;  
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.myrides-item a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.myrides-item p {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.myrides-item button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.myrides-item button:hover {
+    background-color: #45a049;
+}
+
+.myrides-item .details {
+    color: #555;
+}
+
+
+
+
+
+
+.offer-info {
+    margin-bottom: 10px;
+    max-width: 100%;
+}
+
+.offer-info p {
+    margin-bottom: 5px;
+}
+
+.offer-info strong {
+    display: inline-block;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+
+
+.search-list,
+#pastOffersList,
+#pastBookingsList {
+    display: inline-block;
+    text-align: left;
+    padding: 0;
+    width: 50%;
+   
+}
+
+
+#current-rides {
+    text-align: center;
+}
+
+#current-searches {
+    text-align: center;
+}
+
+#current-bookings {
+    text-align: center; 
+}
+
+#past-bookings {
+    text-align: center; 
+}
+#past-rides {
+    text-align: center; 
+}
+
+#currentOffersList {
+    display: inline-block;
+    text-align: left;
+    padding: 0; 
+    width: 50%;
+
+}
+
+
+
+
+
+.sidebar {
+    float: left;
+    width: 200px;
+    background-color: #c4c4c4;
+    padding: 20px;
+    height: 100vh;
+}
+
+.sidebar-menu {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    margin-bottom: 10px;
+}
+
+.sidebar-menu li a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.sidebar-menu li a:hover {
+    background-color: #ddd;
+}
+
+

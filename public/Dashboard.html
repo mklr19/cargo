@@ -1,59 +1,163 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
     <title>MyCargonaut - Hauptseite</title>
+    <link rel="stylesheet" type="text/css" href="css/sides.css">
     <link rel="stylesheet" type="text/css" href="css/dashboard.css">
 </head>
-<body class="dashboard">
+<body class="dashboard dashboard-background">
     <header>
-        <nav>
-            <ul>
-                <li><a href="dashboard.html">Startseite</a></li>
-                <li><a href="profile.html">Profil</a></li>
-                <li><a href="vehicles.html">Fahrzeugverwaltung</a></li>
-                <li><a href="offers.html">Angebote</a></li>
-                <li><a href="search.html">Suchanfragen</a></li>
-                <li><a href="myrides.html">Meine Fahrten</a></li>
-                <li><a href="support.html">Support</a></li>
-                <li><a href="logout.html">Abmelden</a></li>
-            </ul>
-        </nav>
+        <div class="header-container">
+            <img src="./img/Export/0.75x/semi_androidMyCargonautldpi.png" alt="MyCargonaut Logo" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Startseite</a></li>
+                    <li><a href="offers.html">Angebote</a></li>
+                    <li><a href="search.html">Suchanfragen</a></li>
+                    <li><a href="myrides.html">Meine Fahrten</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons-container">
+                <div class="icon-container">
+                    <a class="coin-icon-container" href="Payment.html">
+                        <img src="./img/coin.png" alt="Geld Icon">
+                    </a>
+                    <span id="currentBalance" class="balance">0€</span>
+                    <a class="nachricht-icon-container" href="OverviewChats.html">
+                        <img src="./img/nachricht.png" alt="Nachrichten Icon">
+                    </a>
+                </div>
+                <div class="profile-icon-container" onclick="toggleDropdown()">
+                    <img src="./img/profil.png" alt="Profil Icon" class="profile-icon">
+                    <div class="dropdown" id="profileDropdown">
+                        <a href="Profile.html">Mein Profil</a>
+                        <a href="vehicles.html">Fahrzeuge verwalten</a>
+                        <a href="logout.html">Abmelden</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
 
     <main>
-        <section id="welcome-section">
-            <h1>Willkommen bei MyCargonaut!</h1>
-            <p>Deine Plattform für Mitfahr- und Lieferdienstleistungen.</p>
-        </section>
+        <section class="profile-container transparent-section">
+            <section id="offer-section" class="centered-section  transparent-section">
+                <div class="offer-content">
+                    <button onclick="location.href='NewOffer.html'">Neues Angebot erstellen</button>
+                </div>
+                <div id="current-rides">
+                    <h2>Deine Angebote</h2>
+                    <ul id="currentOffersList">
+                        <!-- Weitere aktuelle Fahrten -->
+                    </ul>
+                </div>
+            </section>
 
-        <section id="offers-section" onclick="location.href='offers.html';" style="cursor: pointer;">
-            <h2>Angebote</h2>
-            <p>Hier kannst du nach Fahrten anbieten und suchen.</p>
-            <!-- Weitere Inhalte oder Links zu Angeboten/Gesuchen -->
+            <section id="offer-section" class="centered-section  transparent-section">
+                <div id="current-bookings">
+                    <h2>Deine Buchungen</h2>
+                    <ul class="search-list">
+                        <!-- Weitere aktuelle Fahrten -->
+                    </ul>
+                </div>
+            </section>
         </section>
-
-        <section id="offers-section" onclick="location.href='search.html';" style="cursor: pointer;">
-            <h2>Suchanfragen</h2>
-            <p>Hier kannst du nach Anfragen erstellen und suchen.</p>
-            <!-- Weitere Inhalte oder Links zu Angeboten/Gesuchen -->
-        </section>
-
-        <section id="vehicle-management" onclick="location.href='vehicles.html';" style="cursor: pointer;">
-            <h2>Fahrzeugverwaltung</h2>
-            <p>Verwalte hier deine Fahrzeuge.</p>
-            <!-- Weitere Inhalte zur Fahrzeugverwaltung -->
-        </section>
-
-        <section id="myRides" onclick="location.href='myrides.html';" style="cursor: pointer;">
-            <h2>Meine Fahrten</h2>
-            <p>Erhalte einen Überblick über deine Fahrten.</p>
-            <!-- Weitere Inhalte zur Fahrzeugverwaltung -->
-        </section>
-
     </main>
 
-    <footer>
-        <p>© 2023 MyCargonaut</p>
+    <footer class="footer">
+        <p>© 2023 MyCargonaut | <a href="support.html" style="color: white;">Support</a></p>
     </footer>
+
+    <script>
+        function toggleDropdown() {
+            var dropdown = document.getElementById('profileDropdown');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        }
+
+        document.addEventListener('mouseup', function (event) {
+            var dropdown = document.getElementById('profileDropdown');
+            if (!dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        window.onload = async () => {
+            try {
+                const response = await fetch('/getUserData');
+                if (!response.ok) throw new Error('Fehler beim Laden der Benutzerdaten');
+
+                const userData = await response.json();
+
+
+
+                // Aktuelles Guthaben im Header anzeigen (falls vorhanden)
+                const currentBalanceElement = document.getElementById('currentBalance');
+                if (currentBalanceElement) {
+                    currentBalanceElement.textContent = `${userData.geld}€`;
+                }
+
+                // Laden der aktuellen Buchungen des Benutzers
+                fetch('/getCurrentBookings')
+                .then(response => response.json())
+                .then(bookings => {
+                    const currentBookingsList = document.getElementById('current-bookings').querySelector('ul');
+                    bookings.forEach(booking => {
+                        const bookingItem = document.createElement('li');
+                        bookingItem.classList.add('myrides-item');
+
+                        bookingItem.innerHTML = `
+                            <div class="offer-info">
+                                <p><strong>Von:</strong> ${booking.startOrt}</p>
+                                <p><strong>Nach:</strong> ${booking.zielOrt}</p>
+                                <p><strong>Personen:</strong> ${booking.personen}</p>
+                                <p><strong>Raum:</strong> ${booking.raum}m²</p>
+                                <p><strong>Gewicht:</strong> ${booking.gewicht}kg</p>
+                                <p><strong>Preis:</strong> ${booking.preis}€</p>
+                                <button onclick="location.href='OverviewBooking.html?bookingId=${booking.bookingId}'">Weitere Infos</button>
+                            </div>`;
+
+                                currentBookingsList.appendChild(bookingItem);
+                        });
+                })
+                .catch(error => console.error('Fehler beim Laden der aktuellen Buchungen:', error));
+
+
+
+
+
+                // Laden der aktuellen Angebote des Benutzers
+                fetch('/getCurrentOffers')
+                .then(response => response.json())
+                .then(offers => {
+                    const currentOffersList = document.getElementById('currentOffersList');
+                    offers.forEach(offer => {
+                        const offerItem = document.createElement('li');
+                        offerItem.classList.add('myrides-item');
+                        offerItem.innerHTML = `
+                            <div class="offer-info">
+                                <p><strong>Datum:</strong> ${offer.startZeit}</p>
+                                <p><strong>Von:</strong> ${offer.startOrt}</p>
+                                <p><strong>Nach:</strong> ${offer.zielOrt}</p>
+                                <button onclick="location.href='OverviewOffer.html?offerId=${offer.offerId}'">Weitere Infos</button>
+                            </div>`;
+
+                        currentOffersList.appendChild(offerItem);
+                    });
+                })
+                .catch(error => console.error('Fehler beim Laden der aktuellen Fahrten:', error));
+
+
+
+
+            } catch (err) {
+                console.error('Fehler:', err);
+            }
+        };
+
+
+
+
+
+    </script>
 </body>
 </html>

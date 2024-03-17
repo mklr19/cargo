@@ -2,22 +2,40 @@
 <html>
 <head>
     <title>Support - MyCargonaut</title>
-    <link rel="stylesheet" type="text/css" href="css/dashboard.css">
+    <link rel="stylesheet" type="text/css" href="css/sides.css">
 </head>
 <body class="dashboard">
     <header>
-        <nav>
-            <ul>
-                <li><a href="dashboard.html">Startseite</a></li>
-                <li><a href="profile.html">Profil</a></li>
-                <li><a href="vehicles.html">Fahrzeugverwaltung</a></li>
-                <li><a href="offers.html">Angebote</a></li>
-                <li><a href="search.html">Suchanfragen</a></li>
-                <li><a href="myrides.html">Meine Fahrten</a></li>
-                <li><a href="support.html">Support</a></li>
-                <li><a href="logout.html">Abmelden</a></li>
-            </ul>
-        </nav>
+        <div class="header-container">
+            <img src="./img/Export/0.75x/semi_androidMyCargonautldpi.png" alt="MyCargonaut Logo" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Startseite</a></li>
+                    <li><a href="offers.html">Angebote</a></li>
+                    <li><a href="search.html">Suchanfragen</a></li>
+                    <li><a href="myrides.html">Meine Fahrten</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons-container">
+                <div class="icon-container">
+                    <a class="coin-icon-container" href="Payment.html">
+                        <img src="./img/coin.png" alt="Geld Icon">
+                    </a>
+                    <span id="currentBalance" class="balance">0€</span>
+                    <a class="nachricht-icon-container" href="OverviewChats.html">
+                        <img src="./img/nachricht.png" alt="Nachrichten Icon">
+                    </a>
+                </div>
+                <div class="profile-icon-container" onclick="toggleDropdown()">
+                    <img src="./img/profil.png" alt="Profil Icon" class="profile-icon">
+                    <div class="dropdown" id="profileDropdown">
+                        <a href="Profile.html">Mein Profil</a>
+                        <a href="vehicles.html">Fahrzeuge verwalten</a>
+                        <a href="logout.html">Abmelden</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
 
     <main>
@@ -41,9 +59,41 @@
             <p>E-Mail: support@mycargonaut.com</p>
         </section>
     </main>
+    
 
-    <footer>
-        <p>© 2023 MyCargonaut</p>
+    <footer class="footer">
+        <p>© 2023 MyCargonaut | <a href="support.html" style="color: white;">Support</a></p>
     </footer>
 </body>
+
+<script>
+    function toggleDropdown() {
+        var dropdown = document.getElementById('profileDropdown');
+        dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+    }
+
+    document.addEventListener('mouseup', function (event) {
+        var dropdown = document.getElementById('profileDropdown');
+        if (!dropdown.contains(event.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    window.onload = async () => {
+        try {
+            const response = await fetch('/getUserData');
+            if (!response.ok) throw new Error('Fehler beim Laden der Benutzerdaten');
+
+            const userData = await response.json();
+        
+            document.getElementById('currentBalance').textContent = `${userData.geld}€`;
+
+
+          
+        } catch (err) {
+            console.error('Fehler:', err);
+        }
+    };
+
+</script>
 </html>

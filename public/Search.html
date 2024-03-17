@@ -2,100 +2,220 @@
 <html>
 <head>
     <title>Angebote und Suchanfragen - MyCargonaut</title>
-    <link rel="stylesheet" type="text/css" href="css/dashboard.css">
+    <link rel="stylesheet" type="text/css" href="css/sides.css">
+    <link rel="stylesheet" type="text/css" href="css/search.css">
 </head>
 <body class="dashboard">
     <header>
-        <nav>
-            <ul>
-                <li><a href="dashboard.html">Startseite</a></li>
-                <li><a href="profile.html">Profil</a></li>
-                <li><a href="vehicles.html">Fahrzeugverwaltung</a></li>
-                <li><a href="offers.html">Angebote</a></li>
-                <li><a href="search.html">Suchanfragen</a></li>
-                <li><a href="myrides.html">Meine Fahrten</a></li>
-                <li><a href="support.html">Support</a></li>
-                <li><a href="logout.html">Abmelden</a></li>
-            </ul>
-        </nav>
+        <div class="header-container">
+            <img src="./img/Export/0.75x/semi_androidMyCargonautldpi.png" alt="MyCargonaut Logo" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Startseite</a></li>
+                    <li><a href="offers.html">Angebote</a></li>
+                    <li><a href="search.html">Suchanfragen</a></li>
+                    <li><a href="myrides.html">Meine Fahrten</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons-container">
+                <div class="icon-container">
+                    <a class="coin-icon-container" href="Payment.html">
+                        <img src="./img/coin.png" alt="Geld Icon">
+                    </a>
+                    <span id="currentBalance" class="balance">0€</span>
+                    <a class="nachricht-icon-container" href="OverviewChats.html">
+                        <img src="./img/nachricht.png" alt="Nachrichten Icon">
+                    </a>
+                </div>
+                <div class="profile-icon-container" onclick="toggleDropdown()">
+                    <img src="./img/profil.png" alt="Profil Icon" class="profile-icon">
+                    <div class="dropdown" id="profileDropdown">
+                        <a href="Profile.html">Mein Profil</a>
+                        <a href="vehicles.html">Fahrzeuge verwalten</a>
+                        <a href="logout.html">Abmelden</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
 
     <main>
-        <section id="search-requests">
-            <h2>Suchanfragen</h2>
-            <!-- Liste der aktuellen Suchanfragen -->
-            <ul id="searchList">
-                <!-- Hier werden Suchanfragen dynamisch eingefügt -->
-            </ul>
-        </section>
         <section id="create-search">
-            <h2>Neue Suchanfrage erstellen</h2>
+            <h2>Suchanfragen filtern</h2>
             <form id="searchForm">
-                <input type="text" id="startOrt" name="startOrt" placeholder="Startort" required>
-                <input type="text" id="zielOrt" name="zielOrt" placeholder="Zielort" required>
-                <input type="date" id="startDatum" name="startDatum" required>
-                <input type="number" id="personen" name="personen" placeholder="Personenanzahl" required>
-                <input type="number" id="raum" name="raum" placeholder="Benötigter Raum" required>
-                <input type="number" id="gewicht" name="gewicht" placeholder="Gewicht" required>
-                <button type="submit">Suchanfrage erstellen</button>
+                <input type="text" id="filterStartOrt" name="filterStartOrt" placeholder="Startort">
+                <input type="text" id="filterZielOrt" name="filterZielOrt" placeholder="Zielort">
+                <input type="date" id="filterDatum" name="filterDatum">
+                <input type="text" id="number" name="number" placeholder="Anzahl der Mitfahrer">
+                <input type="text" id="weight" name="weight" placeholder="Gewicht ab">
+                <button type="submit">Filtern</button>
             </form>
         </section>
+
+        <section id="search-requests">
+            <div class="header-content">
+                <h2>Angebotene Suchanfragen</h2>
+                <div class="offer-content">
+                    <button onclick="location.href='NewSearch.html'">Eigene Suchanfrage erstellen</button>
+                </div>
+            </div>
+            <div class="border">
+                <div id="searchList">
+                    <!-- Hier werden Suchanfragen dynamisch eingefügt -->
+                </div>
+            </div>
+        </section>
+
+
 
 
     </main>
 
+    <div id="chatModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Nachricht an <span id="chatWithUsername"></span></p>
+            <textarea id="chatMessage" placeholder="Schreibe eine Nachricht..."></textarea>
+            <input type="hidden" id="chatUsername">
+            <button id="sendChatMessage">Senden</button>
+        </div>
+    </div>
     <script>
-        // Skript zum Senden von Suchanfragen und Laden aller vorhandenen Suchanfragen
 
-        // Funktion zum Laden der Suchanfragen
-        function loadSearchRequests() {
-            fetch('/getSearchRequests')
-                .then(response => response.json())
-                .then(searchRequests => {
-                    const searchList = document.getElementById('searchList');
-                    searchList.innerHTML = ''; // Liste zuerst leeren
-                    searchRequests.forEach(request => {
-                        searchList.innerHTML +=
-                            `<li>${request.benutzername} sucht Fahrt von ${request.startOrt} nach ${request.zielOrt} am ${request.startDatum} -
-                Personen: ${request.personen}, Raum: ${request.raum}, Gewicht: ${request.gewicht}</li>`;
-                    });
-                })
-                .catch(error => console.error('Fehler beim Laden der Suchanfragen:', error));
+
+
+
+        function toggleDropdown() {
+            var dropdown = document.getElementById('profileDropdown');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
         }
 
-        // Event-Listener für das Suchformular
-        document.getElementById('searchForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const formData = new FormData(this);
-            const formBody = new URLSearchParams(formData).toString();
-
-            fetch('/addSearch', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: formBody
-            })
-                .then(response => {
-                    if (response.ok) {
-                        alert('Suchanfrage erfolgreich erstellt');
-                        loadSearchRequests(); // Lädt die Suchanfragen neu, um die Liste zu aktualisieren
-                    } else {
-                        throw new Error('Fehler beim Erstellen der Suchanfrage');
-                    }
-                })
-                .catch(error => {
-                    console.error('Fehler:', error);
-                });
+        document.addEventListener('mouseup', function (event) {
+            var dropdown = document.getElementById('profileDropdown');
+            if (!dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
         });
 
-        // Laden der Suchanfragen beim ersten Seitenaufruf
+        function respondToSearch(searchId) {
+            window.location.href = `searchoffer.html?searchId=${searchId}`;
+        }
+
+        // Funktion zum Öffnen des Chat-Fensters
+        function openChat(username) {
+            document.getElementById('chatWithUsername').textContent = username;
+            document.getElementById('chatUsername').value = username;
+            document.getElementById('chatModal').style.display = "block";
+        }
+
+
+        document.getElementsByClassName("close")[0].onclick = function () {
+            document.getElementById('chatModal').style.display = "none";
+        }
+
+
+        window.onclick = function (event) {
+            if (event.target == document.getElementById('chatModal')) {
+                document.getElementById('chatModal').style.display = "none";
+            }
+        }
+
+        document.getElementById('sendChatMessage').addEventListener('click', async function () {
+            let message = document.getElementById('chatMessage').value;
+            let receiverUsername = document.getElementById('chatUsername').value;
+
+            if (message.trim() === "") {
+                alert("Bitte eine Nachricht eingeben.");
+                return;
+            }
+
+
+            const data = new URLSearchParams();
+            data.append('receiverUsername', receiverUsername);
+            data.append('messageText', message);
+
+            try {
+                const response = await fetch('/sendMessageUsingUsername', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: data
+                });
+
+                if (!response.ok) throw new Error('Nachricht konnte nicht gesendet werden');
+
+                alert('Nachricht erfolgreich gesendet');
+                document.getElementById('chatModal').style.display = "none";
+                document.getElementById('chatMessage').value = '';
+            } catch (error) {
+                console.error('Fehler beim Senden der Nachricht:', error);
+                alert('Fehler beim Senden der Nachricht');
+            }
+        });
+     // Lädt die Suchanfragen, optional mit Filtern
+    function loadSearchRequests() {
+        const filterStartOrt = document.getElementById('filterStartOrt').value;
+        const filterZielOrt = document.getElementById('filterZielOrt').value;
+        const filterDatum = document.getElementById('filterDatum').value;
+        const number = document.getElementById('number').value;
+        const weight = document.getElementById('weight').value;
+
+        const queryParams = new URLSearchParams({
+            startOrt: filterStartOrt,
+            zielOrt: filterZielOrt,
+            startDatum: filterDatum,
+            personen: number,
+            gewicht: weight
+        }).toString();
+
+        fetch(`/getSearchRequests?${queryParams}`)
+            .then(response => response.json())
+            .then(searchRequests => {
+                const searchList = document.getElementById('searchList');
+                searchList.innerHTML = '';
+                searchRequests.forEach(request => {
+                    const searchItem = document.createElement('div');
+                    searchItem.classList.add('search-item');
+                    searchItem.innerHTML = `
+                        <div class="offer-info">
+                            <p><strong>Benutzername:</strong><a href="Profilextern.html?username=${encodeURIComponent(request.benutzername)}">${request.benutzername}</a></p>
+                            <p><strong>Startort:</strong> ${request.startOrt}</p>
+                            <p><strong>Zielort:</strong> ${request.zielOrt}</p>
+                            <p><strong>Startzeit:</strong> ${request.startDatum}</p>
+                            <p><strong>Personen:</strong> ${request.personen}</p>
+                            <p><strong>Raum:</strong> ${request.raum}m²</p>
+                            <p><strong>Gewicht:</strong> ${request.gewicht}kg</p>
+                        </div>
+                        <button onclick="respondToSearch(${request.searchId})">Buchen</button>
+                        <button class="chat-button" onclick="openChat('${request.benutzername}')">Kontaktieren</button>`;
+                    searchList.appendChild(searchItem);
+                });
+            })
+            .catch(error => console.error('Fehler beim Laden der Suchanfragen:', error));
+    }
+
+    // Event-Listener für das Filter-Formular
+    document.getElementById('searchForm').addEventListener('submit', function(event) {
+        event.preventDefault();
         loadSearchRequests();
+    });
+
+    // Initialisiert die Webseite mit Benutzerdaten und lädt die Suchanfragen
+    window.onload = async () => {
+        try {
+            const response = await fetch('/getUserData');
+            if (!response.ok) throw new Error('Fehler beim Laden der Benutzerdaten');
+            const userData = await response.json();
+            document.getElementById('currentBalance').textContent = `${userData.geld}€`;
+            loadSearchRequests(); // Lade Suchanfragen beim Start
+        } catch (err) {
+            console.error('Fehler:', err);
+        }
+    };
     </script>
 
 
-    <footer>
-        <p>© 2023 MyCargonaut</p>
+    <footer class="footer">
+        <p>© 2023 MyCargonaut | <a href="support.html" style="color: white;">Support</a></p>
     </footer>
 </body>
 </html>

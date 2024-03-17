@@ -9,8 +9,8 @@ services:
     depends_on:
       - db
     volumes:
-      - ./public:/app/public  # Passe dies entsprechend deiner Verzeichnisstruktur an
-      - ./app.js:/app/app.js  # Passe dies entsprechend deiner Verzeichnisstruktur an
+      - ./public:/app/public  
+      - ./app.js:/app/app.js 
  
   db:
     image: postgres
@@ -25,7 +25,7 @@ services:
     networks:
       - shared-network
     volumes:
-     # - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./postgres-db:/var/lib/postgresql/data
 
 networks:

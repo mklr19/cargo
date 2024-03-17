@@ -2,88 +2,440 @@
 <html>
 <head>
     <title>Profil - MyCargonaut</title>
-    <link rel="stylesheet" type="text/css" href="css/dashboard.css">
+    <link rel="stylesheet" type="text/css" href="css/sides.css">
+    <link rel="stylesheet" type="text/css" href="css/profile.css">
+
 </head>
 <body class="dashboard">
     <header>
-        <nav>
-            <ul>
-                <li><a href="dashboard.html">Startseite</a></li>
-                <li><a href="profile.html">Profil</a></li>
-                <li><a href="vehicles.html">Fahrzeugverwaltung</a></li>
-                <li><a href="offers.html">Angebote</a></li>
-                <li><a href="search.html">Suchanfragen</a></li>
-                <li><a href="myrides.html">Meine Fahrten</a></li>
-                <li><a href="support.html">Support</a></li>
-                <li><a href="logout.html">Abmelden</a></li>
-            </ul>
-        </nav>
+        <div class="header-container">
+            <img src="./img/Export/0.75x/semi_androidMyCargonautldpi.png" alt="MyCargonaut Logo" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Startseite</a></li>
+                    <li><a href="offers.html">Angebote</a></li>
+                    <li><a href="search.html">Suchanfragen</a></li>
+                    <li><a href="myrides.html">Meine Fahrten</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons-container">
+                <div class="icon-container">
+                    <a class="coin-icon-container" href="Payment.html">
+                        <img src="./img/coin.png" alt="Geld Icon">
+                    </a>
+                    <span id="currentBalance" class="balance">0€</span>
+                    <a class="nachricht-icon-container" href="OverviewChats.html">
+                        <img src="./img/nachricht.png" alt="Nachrichten Icon">
+                    </a>
+                </div>
+                <div class="profile-icon-container" onclick="toggleDropdown()">
+                    <img src="./img/profil.png" alt="Profil Icon" class="profile-icon">
+                    <div class="dropdown" id="profileDropdown">
+                        <a href="Profile.html">Mein Profil</a>
+                        <a href="vehicles.html">Fahrzeuge verwalten</a>
+                        <a href="logout.html">Abmelden</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <main>
+    <main class="profile-frame">
         <section class="profile-container">
-            <h2>Benutzerprofil</h2>
-            <div class="profile-info">
-                <!-- Benutzerinformationen werden hier angezeigt -->
+            <div class="user-profile-and-image">
+                <div class="user-profile">
+                    <h2>Mein Benutzerprofil</h2>
+                    <div class="profile-info">
+                        <!-- Benutzerinformationen werden hier angezeigt -->
+
+                    </div>
+                    <div id="editProfileForm" style="display: none;">
+                        <div class="input-group">
+                            <label for="editFirstName">Vorname:</label>
+                            <input type="text" id="editFirstName">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="editLastName">Nachname:</label>
+                            <input type="text" id="editLastName">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="editEmail">E-Mail:</label>
+                            <input type="email" id="editEmail">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="editPhone">Handynummer:</label>
+                            <input type="tel" id="editPhone">
+                        </div>
+
+                        <button id="saveProfileChanges">Änderungen speichern</button>
+                    </div>
+
+                </div>
+
+                <div class="profile-image">
+                    <h2>Profilbild</h2>
+                    <form id="uploadImageForm" enctype="multipart/form-data">
+                        <img id="displayedImage" src="" alt="Profilbild" style="max-width: 200px; max-height: 200px;" />
+
+                        <div class="image-upload">
+                            <label for="profileImage">Bild auswählen:</label>
+                            <input type="file" id="profileImage" name="profileImage" accept="image/*">
+                        </div>
+
+                        <button type="submit">Bild hochladen</button>
+                    </form>
+                </div>
             </div>
-
-            <h2>Geld hinzufügen</h2>
-            <form id="addMoneyForm">
-                <label for="paymentMethod">Zahlungsmethode:</label>
-                <select id="paymentMethod" name="paymentMethod">
-                    <option value="paypal">PayPal</option>
-                    <option value="creditcard">Kreditkarte</option>
-                    <option value="banktransfer">Banküberweisung</option>
-                </select>
-
-                <label for="amount">Betrag:</label>
-                <input type="number" id="amount" name="amount" step="0.01" placeholder="Betrag in Euro" required>
-
-                <button type="submit">Geld hinzufügen</button>
-            </form>
         </section>
+
+        <section class="profile-container">
+            <h2>Bewertungen als Mitfahrer</h2>
+            <div id="mitfahrerBewertungen" class="rating-info">
+                <!-- Bewertungen als Mitfahrer werden hier geladen -->
+            </div>
+        </section>
+
+        <section class="profile-container">
+            <h2>Bewertungen als Fahrer</h2>
+            <div id="fahrerBewertungen" class="rating-info">
+                <!-- Bewertungen als Fahrer werden hier geladen -->
+            </div>
+        </section>
+
+        <section class="profile-container">
+            <h2>Eigenschaften und Notiz</h2>
+            <div class="properties-and-note">
+                <div class="attr">
+                    <div class="profile-attr">
+
+                        <!-- Sprachen und Eigenschaften werden hier angezeigt -->
+                    </div>
+                    <button id="editPropertiesButton" onclick="openModal()">Bearbeiten</button>
+                </div>
+
+
+                <div class="profile-notiz">
+                    <p><strong>Notiz:</strong></p>
+                    <form id="saveNoteForm">
+                        <textarea id="userNote" placeholder="Schreibe etwas über dich..."></textarea>
+                        <button type="submit" id="saveNoteButton">Notiz speichern</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <div id="editAttributesModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Eigenschaften bearbeiten</h2>
+                <div>
+                    <h3>Sprachen</h3>
+                    <input type="text" id="editLanguages" placeholder="Sprachen (durch Komma getrennt)">
+                </div>
+                <div>
+                    <h3>Eigenschaften</h3>
+                    <div>
+                        <label for="editFriendliness">Freundlichkeit:</label>
+                        <select id="editFriendliness">
+                            <option value="Hoch">Hoch</option>
+                            <option value="Mittel">Mittel</option>
+                            <option value="Wenig">Wenig</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="editReliability">Zuverlässigkeit:</label>
+                        <select id="editReliability">
+                            <option value="Hoch">Hoch</option>
+                            <option value="Mittel">Mittel</option>
+                            <option value="Wenig">Wenig</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="editSmoker">Raucher:</label>
+                        <select id="editSmoker">
+                            <option value="Ja">Ja</option>
+                            <option value="Nein">Nein</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="editTalkative">Gesprächig:</label>
+                        <select id="editTalkative">
+                            <option value="Ja">Ja</option>
+                            <option value="Nein">Nein</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="saveAttributesButton">Änderungen speichern</button>
+            </div>
+        </div>
+
+
+
     </main>
 
-    <footer>
-        <p>© 2023 MyCargonaut</p>
+    <footer class="footer">
+        <p>© 2023 MyCargonaut | <a href="support.html" style="color: white;">Support</a></p>
     </footer>
 
     <script>
+function renderRatingsAsStars(ratingElement, key, ratingValue) {
+    let ratingText = key + ": ";
+    if (ratingValue === null || ratingValue === "null" || ratingValue === "") {
+        ratingText += "Noch nicht bewertet";
+    } else {
+        const roundedValue = Math.round(ratingValue);
+        const maxStars = 5;
+        const stars = '⭐'.repeat(roundedValue);
+        const emptyStars = '☆'.repeat(maxStars - roundedValue);
+        const roundValue = ratingValue.toFixed(2);
+        ratingText += `${stars}${emptyStars} (${roundValue} von ${maxStars})`;
+    }
+    ratingElement.innerHTML = ratingText;
+}
+
+        function openModal() {
+            document.getElementById('editAttributesModal').style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById('editAttributesModal').style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            var modal = document.getElementById('editAttributesModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        let userData = {};
+
+        function toggleDropdown() {
+            var dropdown = document.getElementById('profileDropdown');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        }
+
+        document.addEventListener('mouseup', function (event) {
+            var dropdown = document.getElementById('profileDropdown');
+            if (!dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
         window.onload = async () => {
+            try {
+                // Benutzerdaten laden
+                const userResponse = await fetch('/getUserData');
+                const userData = await userResponse.json();
+                
+                // Bewertungen als Mitfahrer laden
+                const mitfahrerResponse = await fetch(`/getAverageMitfahrerRatings?benutzername=${encodeURIComponent(userData.benutzername)}`);
+                const mitfahrerRatings = await mitfahrerResponse.json();
+                document.getElementById('mitfahrerBewertungen').innerHTML = `
+                    <p>Komplette Bewertung: ${mitfahrerRatings.komplett}</p>
+                    <p>Pünktlichkeit: ${mitfahrerRatings.punktlich}</p>
+                    <p>Stimmung: ${mitfahrerRatings.mood}</p>
+                    <p>Abmachung: ${mitfahrerRatings.abmachung}</p>
+                `;
+                
+                // Bewertungen als Fahrer laden
+                const fahrerResponse = await fetch(`/getAverageFahrerRatings?benutzername=${encodeURIComponent(userData.benutzername)}`);
+                const fahrerRatings = await fahrerResponse.json();
+                document.getElementById('fahrerBewertungen').innerHTML = `
+                    <p>Komplette Bewertung: ${fahrerRatings.komplett}</p>
+                    <p>Pünktlichkeit: ${fahrerRatings.punktlich}</p>
+                    <p>Stimmung: ${fahrerRatings.mood}</p>
+                    <p>Fracht: ${fahrerRatings.fracht}</p>
+                    <p>Abmachung: ${fahrerRatings.abmachung}</p>
+                `;
+
+            document.querySelectorAll('#mitfahrerBewertungen p').forEach(item => {
+                    const parts = item.innerText.split(':');
+                    const key = parts[0].trim();
+                    let value = parts[1].trim();
+                    value = value === "null" || value === "" ? null : parseFloat(value);
+                    renderRatingsAsStars(item, key, value);
+                });
+
+                // Beispiel für die Anwendung auf Fahrer-Bewertungen
+                document.querySelectorAll('#fahrerBewertungen p').forEach(item => {
+                    const parts = item.innerText.split(':');
+                    const key = parts[0].trim();
+                    let value = parts[1].trim();
+                    value = value === "null" || value === "" ? null : parseFloat(value);
+                    renderRatingsAsStars(item, key, value);
+                });
+            } catch (error) {
+                console.error('Fehler beim Laden der Bewertungen:', error);
+            }
             try {
                 const response = await fetch('/getUserData');
                 if (!response.ok) throw new Error('Fehler beim Laden der Benutzerdaten');
 
-                const userData = await response.json();
+                userData = await response.json(); // Aktualisiere die globale Variable
                 document.querySelector('.profile-info').innerHTML = `
-                        <p><strong>Benutzername:</strong> ${userData.benutzername}</p>
-                        <p><strong>E-Mail:</strong> ${userData.email}</p>
-                        <p><strong>Handynummer:</strong> ${userData.handynummer}</p>
-                        <p><strong>Geburtsdatum:</strong> ${userData.tag}.${userData.monat}.${userData.jahr}</p>
-                        <p><strong>Bewertung:</strong> ${userData.bewertung}</p>
-                        <p><strong>goldene Küchlers:</strong> ${userData.geld}</p>
-                    `;
+                    <p><strong>Benutzername:</strong> ${userData.benutzername}</p>
+                    <p><strong>Vorname:</strong> ${userData.vorname}</p>
+                    <p><strong>Nachname:</strong> ${userData.nachname}</p>
+                    <p><strong>E-Mail:</strong> ${userData.email}</p>
+                    <p><strong>Handynummer:</strong> ${userData.handynummer}</p>
+                    <p><strong>Geburtsdatum:</strong> ${userData.tag}.${userData.monat}.${userData.jahr}</p>
+                    <p><strong>Guthaben:</strong> ${userData.geld}€</p>
+                    <button id="editProfileButton">Profil bearbeiten</button>
+                `;
+
+
+
+                document.getElementById('editProfileButton').addEventListener('click', function () {
+                    // Fülle die Bearbeitungsfelder mit aktuellen Werten
+                    document.getElementById('editFirstName').value = userData.vorname;
+                    document.getElementById('editLastName').value = userData.nachname;
+                    document.getElementById('editEmail').value = userData.email;
+                    document.getElementById('editPhone').value = userData.handynummer;
+
+                    // Zeige das Formular an
+                    document.getElementById('editProfileForm').style.display = 'block';
+                });
+
+                document.getElementById('saveProfileChanges').addEventListener('click', async function () {
+                    const firstName = document.getElementById('editFirstName').value;
+                    const lastName = document.getElementById('editLastName').value;
+                    const email = document.getElementById('editEmail').value;
+                    const phone = document.getElementById('editPhone').value;
+
+                    const data = { vorname: firstName, nachname: lastName, email: email, handynummer: phone };
+
+                    const response = await fetch('/updateUserProfile', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        alert('Profil erfolgreich aktualisiert');
+                        window.location.reload(); // UI aktualisieren
+                    } else {
+                        alert('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
+                    }
+                });
+
+                // Guthaben im Header anzeigen
+                const currentBalanceElement = document.getElementById('currentBalance');
+                if (currentBalanceElement) {
+                    currentBalanceElement.textContent = `${userData.geld}€`;
+                }
+
+                // Überprüfen, ob das attribute-Feld vorhanden ist
+                if (userData.attribute) {
+                    const attributes = userData.attribute;
+                    let languagesHtml = `<p><strong>Sprachen:</strong> ${attributes.Sprachen.join(", ")}</p>`;
+                    let propertiesHtml = '<p><strong>Eigenschaften:</strong></p><ul>';
+                    for (const key in attributes.Eigenschaften) {
+                        propertiesHtml += `<li>${key}: ${attributes.Eigenschaften[key]}</li>`;
+                    }
+                    propertiesHtml += '</ul>';
+                    document.querySelector('.profile-attr').innerHTML = languagesHtml + propertiesHtml;
+                }
+                if (userData.notiz) {
+                    document.getElementById('userNote').value = userData.notiz;
+                }
+
+                const imageResponse = await fetch('/getProfileImage');
+                if (imageResponse.ok) {
+                    const imageURL = URL.createObjectURL(await imageResponse.blob());
+                    document.getElementById('displayedImage').src = imageURL;
+                } else {
+                    console.error('Fehler beim Laden des Bildes');
+                }
             } catch (err) {
                 console.error('Fehler:', err);
+
+
             }
         };
-        document.getElementById('addMoneyForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const amount = document.getElementById('amount').value;
-            const response = await fetch('/addMoney', {
+
+        document.getElementById('saveAttributesButton').addEventListener('click', async function () {
+            // Erfassen der Werte aus dem Formular
+            const languages = document.getElementById('editLanguages').value.split(',');
+            const friendliness = document.getElementById('editFriendliness').value;
+            const reliability = document.getElementById('editReliability').value;
+            const smoker = document.getElementById('editSmoker').value;
+            const talkative = document.getElementById('editTalkative').value;
+
+            const properties = {
+                "Freundlichkeit": friendliness,
+                "Zuverlässigkeit": reliability,
+                "Raucher": smoker,
+                "Gesprächig": talkative
+            };
+
+            const attributes = { Sprachen: languages, Eigenschaften: properties };
+
+            // Senden der Daten an den Server
+            const response = await fetch('/updateUserAttributes', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ amount: amount })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ attributes })
             });
 
             if (response.ok) {
-                alert('Geld erfolgreich hinzugefügt');
-                window.location.reload(); // Seite neu laden, um das aktualisierte Guthaben anzuzeigen
+                alert('Eigenschaften erfolgreich aktualisiert');
+                // Formular ausblenden und Seite neu laden oder UI aktualisieren
+                document.getElementById('editAttributesModal').style.display = 'none';
+                window.location.reload();
+            } else {
+                alert('Fehler beim Speichern der Eigenschaften');
+            }
+        });
+
+
+
+        document.getElementById('saveNoteForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const note = document.getElementById('userNote').value;
+
+            const response = await fetch('/saveNote', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ note: note })
+            });
+
+            if (response.ok) {
+                alert('Notiz erfolgreich gespeichert');
             } else {
                 const errorText = await response.text();
                 alert('Fehler: ' + errorText);
             }
         });
+
+        document.getElementById('uploadImageForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData();
+            const imageFile = document.getElementById('profileImage').files[0];
+            formData.append('profileImage', imageFile);
+
+            try {
+                const response = await fetch('/uploadProfileImage', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('Bild erfolgreich hochgeladen');
+                } else {
+                    const errorText = await response.text();
+                    alert('Fehler beim Hochladen: ' + errorText);
+                }
+            } catch (err) {
+                console.error('Fehler:', err);
+                alert('Fehler beim Senden der Anfrage');
+            }
+        });
+
+
     </script>
 </body>
 </html>

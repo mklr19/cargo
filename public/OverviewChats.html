@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Angebote und Suchanfragen - MyCargonaut</title>
+    <link rel="stylesheet" type="text/css" href="css/sides.css">
+    <link rel="stylesheet" type="text/css" href="css/chat.css">
+</head>
+<body class="dashboard">
+    <header>
+        <div class="header-container">
+            <img src="./img/Export/0.75x/semi_androidMyCargonautldpi.png" alt="MyCargonaut Logo" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Startseite</a></li>
+                    <li><a href="offers.html">Angebote</a></li>
+                    <li><a href="search.html">Suchanfragen</a></li>
+                    <li><a href="myrides.html">Meine Fahrten</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons-container">
+                <div class="icon-container">
+                    <a class="coin-icon-container" href="Payment.html">
+                        <img src="./img/coin.png" alt="Geld Icon">
+                    </a>
+                    <span id="currentBalance" class="balance">0€</span>
+                    <a class="nachricht-icon-container" href="OverviewChats.html">
+                        <img src="./img/nachricht.png" alt="Nachrichten Icon">
+                    </a>
+                </div>
+                <div class="profile-icon-container" onclick="toggleDropdown()">
+                    <img src="./img/profil.png" alt="Profil Icon" class="profile-icon">
+                    <div class="dropdown" id="profileDropdown">
+                        <a href="Profile.html">Mein Profil</a>
+                        <a href="vehicles.html">Fahrzeuge verwalten</a>
+                        <a href="logout.html">Abmelden</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+   <main>
+    <div class="outer-container">
+        <section class="container">
+            <section class="profile-container narrow">
+                <h2>Benutzer</h2>
+                <div class="chatuser"></div>
+            </section>
+
+            <section class="profile-container wide">
+                <h2>Nachrichten</h2>
+                <div class="chat"></div>
+                <div class="chat-input" style="display: none;">
+                    <input type="text" id="messageInput" placeholder="Schreibe eine Nachricht...">
+                    <button id="sendMessage">Senden</button>
+                </div>
+            </section>
+        </section>
+    </div>
+</main>
+
+    
+    <footer class="footer">
+        <p>© 2023 MyCargonaut | <a href="support.html" style="color: white;">Support</a></p>
+    </footer>
+
+    <script>
+        let currentPartnerUserId;  
+
+        async function loadChat(partnerUserId) {
+            currentPartnerUserId = partnerUserId;
+            try {
+                const response = await fetch(`/getMessages/${partnerUserId}`);
+                if (!response.ok) {
+                    throw new Error('Fehler beim Laden der Nachrichten');
+                }
+                const messages = await response.json();
+
+                const chatDiv = document.querySelector('.chat');
+                chatDiv.innerHTML = '';  
+
+                messages.forEach(msg => {
+                    const messageElement = document.createElement('div');
+                    messageElement.textContent = `${msg.sendername}: ${msg.text}`;
+                    messageElement.classList.add('message');
+                    if (msg.isSender) {
+                        messageElement.classList.add('sent');
+                    } else {
+                        messageElement.classList.add('received');
+                    }
+                    chatDiv.appendChild(messageElement);
+                });
+                document.querySelector('.chat-input').style.display = 'block';
+            } catch (err) {
+                console.error('Fehler:', err);
+            }
+        }
+        function toggleDropdown() {
+            var dropdown = document.getElementById('profileDropdown');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        }
+    
+        document.addEventListener('mouseup', function (event) {
+            var dropdown = document.getElementById('profileDropdown');
+            if (!dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        document.getElementById('sendMessage').addEventListener('click', async () => {
+            const messageText = document.getElementById('messageInput').value;
+            const receiverUserId = currentPartnerUserId;  
+
+            if (!messageText) return;  
+
+            const formData = new URLSearchParams();
+            formData.append('receiverUserId', receiverUserId);
+            formData.append('messageText', messageText);
+
+            try {
+                const response = await fetch('/sendmessageChat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+
+                if (!response.ok) throw new Error('Nachricht konnte nicht gesendet werden');
+
+                document.getElementById('messageInput').value = '';
+                loadChat(currentPartnerUserId);  
+            } catch (err) {
+                console.error('Fehler beim Senden der Nachricht:', err);
+            }
+        });
+    
+        window.onload = async () => {
+            try {
+                const response = await fetch('/getUserData');
+                if (!response.ok) throw new Error('Fehler beim Laden der Benutzerdaten');
+    
+                const userData = await response.json();
+            
+                document.getElementById('currentBalance').textContent = `${userData.geld}€`;
+    
+    
+              
+            } catch (err) {
+                console.error('Fehler:', err);
+            }
+            try {
+                const chatUserDiv = document.querySelector('.chatuser');
+                const response = await fetch('/getChatUsers');
+                if (!response.ok) throw new Error('Fehler beim Laden der Chat-Benutzer');
+
+                const chatUsers = await response.json();
+
+                chatUsers.forEach(user => {
+                    const userButton = document.createElement('button');
+                    userButton.textContent = user.benutzername;
+                    userButton.addEventListener('click', () => {
+                        loadChat(user.userId);  
+                    });
+                    chatUserDiv.appendChild(userButton);
+                });
+            } catch (err) {
+                console.error('Fehler:', err);
+            }
+
+
+        };
+    
+    </script>
+</body>
+</html>

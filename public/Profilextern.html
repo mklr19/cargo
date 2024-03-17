@@ -1,0 +1,337 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Benutzerprofil - MyCargonaut</title>
+    <link rel="stylesheet" type="text/css" href="css/sides.css">
+    <link rel="stylesheet" type="text/css" href="css/profileextern.css">
+</head>
+<body class="dashboard">
+    <header>
+        <div class="header-container">
+            <img src="./img/Export/0.75x/semi_androidMyCargonautldpi.png" alt="MyCargonaut Logo" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Startseite</a></li>
+                    <li><a href="offers.html">Angebote</a></li>
+                    <li><a href="search.html">Suchanfragen</a></li>
+                    <li><a href="myrides.html">Meine Fahrten</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons-container">
+                <div class="icon-container">
+                    <a class="coin-icon-container" href="Payment.html">
+                        <img src="./img/coin.png" alt="Geld Icon">
+                    </a>
+                    <span id="currentBalance" class="balance">0€</span>
+                    <a class="nachricht-icon-container" href="OverviewChats.html">
+                        <img src="./img/nachricht.png" alt="Nachrichten Icon">
+                    </a>
+                </div>
+                <div class="profile-icon-container" onclick="toggleDropdown()">
+                    <img src="./img/profil.png" alt="Profil Icon" class="profile-icon">
+                    <div class="dropdown" id="profileDropdown">
+                        <a href="Profile.html">Mein Profil</a>
+                        <a href="vehicles.html">Fahrzeuge verwalten</a>
+                        <a href="logout.html">Abmelden</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="profile-and-ratings-container">
+            <section class="profile-container">
+                <div class="profile-header">
+                    <h2>Benutzerprofil</h2>
+                    <button class="chat-button" onclick="openModal()">Kontaktieren</button>
+                </div>
+                <img id="displayedImage" src="" alt="Profilbild">
+                <div class="profile-content">
+                    <div class="profile-info">
+                        <!-- Benutzerinfos werden hier angezeigt -->
+                    </div>
+                    <div class="profile-attr">
+                        <h3>Eigenschaften</h3>
+                        <!-- Sprachen und Eigenschaften werden hier angezeigt -->
+                    </div>
+                    <div class="profile-note">
+                        <h3>Notiz</h3>
+                        <!-- Notiz wird hier angezeigt -->
+                    </div>
+                </div>
+            </section>
+    
+            <section class="ratings-container">
+                <h2>Bewertungen</h2>
+                <div class="rating">
+                    <h3>Bewertung als Mitfahrer</h3>
+                    <div id="mitfahrerRatings">
+                        <!-- Bewertungen werden hier angezeigt -->
+                    </div>
+                </div>
+                <div class="rating">
+                    <h3>Bewertung als Fahrer</h3>
+                    <div id="fahrerRatings">
+                        <!-- Bewertungen werden hier angezeigt -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Sende eine Nachricht an den Benutzer</h2>
+                <div id="chatMessages" class="chat-messages">
+                    <!-- Chat-Nachrichten werden hier angezeigt -->
+                </div>
+                <div class="chat-input">
+                    <textarea id="chatMessageInput" placeholder="Schreibe eine Nachricht..."></textarea>
+                    <button id="sendMessageButton">Senden</button>
+                </div>
+            </div>
+        </div>
+    
+    </main>
+
+
+    <script>
+function convertRatingsToStars() {
+    const ratings = document.querySelectorAll('.rating');
+    ratings.forEach(rating => {
+        const ratingItems = rating.querySelectorAll('p');
+        ratingItems.forEach(item => {
+            const text = item.textContent.trim();
+            const ratingValue = text.split(':')[1].trim(); // Extrahiere den Wert nach dem Doppelpunkt
+            if (ratingValue === "null") {
+                // Wenn keine Bewertung vorhanden ist, zeige "Noch nicht bewertet"
+                item.textContent = `${text.split(':')[0]}: Noch nicht bewertet`;
+            } else {
+                // Konvertiere den String zu einem Float und verarbeite die Bewertung
+                const value = parseFloat(ratingValue);
+                if (!isNaN(value)) {
+                    const roundedValue = Math.round(value);
+                    const maxStars = 5;
+                    const stars = '⭐'.repeat(roundedValue);
+                    const emptyStars = '☆'.repeat(maxStars - roundedValue);
+                    const roundValue = value.toFixed(2);
+                    item.textContent = `${text.split(':')[0]}: ${stars}${emptyStars} (${roundValue} von ${maxStars})`;
+                }
+            }
+        });
+    });
+}
+        function fetchRatingsAndConvertToStars(username) {
+        fetch('/getAverageMitfahrerRatings?benutzername=' + encodeURIComponent(username))
+            .then(response => {
+                if (!response.ok) throw new Error('Fehler beim Laden der Mitfahrer-Bewertungen');
+                return response.json();
+            })
+            .then(ratings => {
+                const ratingsDiv = document.getElementById('mitfahrerRatings');
+                ratingsDiv.innerHTML = `
+                    <p><strong>Komplette Bewertung:</strong> ${ratings.komplett}</p>
+                    <p><strong>Pünktlichkeit:</strong> ${ratings.punktlich}</p>
+                    <p><strong>Stimmung:</strong> ${ratings.mood}</p>
+                    <p><strong>Abmachung:</strong> ${ratings.abmachung}</p>
+                `;
+                convertRatingsToStars();
+            })
+            .catch(error => {
+                console.error('Fehler:', error);
+            });
+
+            fetch('/getAverageFahrerRatings?benutzername=' + encodeURIComponent(username))
+                .then(response => {
+                    if (!response.ok) throw new Error('Fehler beim Laden der Fahrer-Bewertungen');
+                    return response.json();
+                })
+                .then(ratings => {
+                    const ratingsDiv = document.getElementById('fahrerRatings');
+                    ratingsDiv.innerHTML = `
+                        <p><strong>Komplette Bewertung:</strong> ${ratings.komplett}</p>
+                        <p><strong>Pünktlichkeit:</strong> ${ratings.punktlich}</p>
+                        <p><strong>Stimmung:</strong> ${ratings.mood}</p>
+                        <p><strong>Fracht:</strong> ${ratings.fracht}</p>
+                        <p><strong>Abmachung:</strong> ${ratings.abmachung}</p>
+                    `;
+                    convertRatingsToStars();
+                })
+                .catch(error => {
+                    console.error('Fehler:', error);
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username');
+
+            if (username) {
+                fetchRatingsAndConvertToStars(username);
+            }
+        });
+        function openModal() {
+            document.getElementById('myModal').style.display = "block";
+        }
+
+        // Schließen des Modalfensters
+        function closeModal() {
+            document.getElementById('myModal').style.display = "none";
+        }
+
+        // Schließen des Modalfensters, wenn der Benutzer außerhalb des Modalfensters klickt
+        window.onclick = function(event) {
+            var modal = document.getElementById('myModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username');
+
+            if (username) {
+                window.onload = async () => {
+
+                    try {
+                        const response = await fetch('/getUserData');
+                        if (!response.ok) throw new Error('Fehler beim Laden der Benutzerdaten');
+
+                        const userData = await response.json();
+
+                        document.getElementById('currentBalance').textContent = `${userData.geld}€`;
+
+                        const imageResponse = await fetch(`/getExternProfileImage?username=${encodeURIComponent(username)}`);
+                        if (imageResponse.ok) {
+                            const imageURL = URL.createObjectURL(await imageResponse.blob());
+                            document.getElementById('displayedImage').src = imageURL;
+                        } else {
+                            console.error('Fehler beim Laden des Bildes');
+                        }
+                        fetchRatingsAndConvertToStars(username);
+                        
+                    } catch (err) {
+                        console.error('Fehler:', err);
+                    }
+
+                };
+
+
+            }
+
+            // Lade Benutzerdaten und Profilbild
+            if (username) {
+                fetch(`/getUserProfile?username=${encodeURIComponent(username)}`)
+                    .then(response => response.json())
+                    .then(userData => {
+                        const profileInfo = document.querySelector('.profile-info');
+                        profileInfo.innerHTML = `
+                            <p><strong>Benutzername:</strong> ${userData.benutzername}</p>
+                            <p><strong>Name :</strong> ${userData.vorname} ${userData.nachname.charAt(0)}.</p>
+                            <p><strong>Geburtsdatum:</strong> ${userData.geburtsdatum}</p>
+                        `;
+
+                        if (userData.attribute) {
+                            const attributes = userData.attribute;
+                            let languagesHtml = `<p><strong>Sprachen:</strong> ${attributes.Sprachen.join(", ")}</p>`;
+                            let propertiesHtml = '<p><strong>Eigenschaften:</strong></p><ul>';
+                            for (const key in attributes.Eigenschaften) {
+                                propertiesHtml += `<li>${key}: ${attributes.Eigenschaften[key]}</li>`;
+                            }
+                            propertiesHtml += '</ul>';
+                            document.querySelector('.profile-attr').innerHTML = languagesHtml + propertiesHtml;
+                        }
+
+                        if (userData.notiz) {
+                            document.querySelector('.profile-note').textContent = userData.notiz;
+                        }
+                    })
+                    .catch(error => console.error('Fehler beim Laden der Benutzerdaten:', error));
+
+                
+                
+                    fetch(`/getAverageMitfahrerRatings?benutzername=${encodeURIComponent(username)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Fehler beim Laden der Durchschnittsbewertungen');
+                        }
+                        return response.json();
+                    })
+                    .then(ratings => {
+                        console.log("Received ratings:", ratings); 
+                        const ratingsDiv = document.getElementById('mitfahrerRatings');
+                        ratingsDiv.innerHTML = `
+                            <p><strong>Komplette Bewertung:</strong> ${ratings.komplett}</p>
+                            <p><strong>Pünktlichkeit:</strong> ${ratings.punktlich}</p>
+                            <p><strong>Stimmung:</strong> ${ratings.mood}</p>
+                            <p><strong>Abmachung:</strong> ${ratings.abmachung}</p>
+                        `;
+                    })
+                    .catch(error => {
+                        console.error('Fehler beim Laden der Durchschnittsbewertungen:', error);
+                    });
+                fetch(`/getAverageFahrerRatings?benutzername=${encodeURIComponent(username)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Fehler beim Laden der Durchschnittsbewertungen als Fahrer');
+                        }
+                        return response.json();
+                    })
+                    .then(ratings => {
+                        const fahrerRatingsDiv = document.getElementById('fahrerRatings');
+                        fahrerRatingsDiv.innerHTML = `
+                            <p><strong>Komplette Bewertung:</strong> ${ratings.komplett}</p>
+                            <p><strong>Pünktlichkeit:</strong> ${ratings.punktlich}</p>
+                            <p><strong>Stimmung:</strong> ${ratings.mood}</p>
+                            <p><strong>Fracht:</strong> ${ratings.fracht}</p>
+                            <p><strong>Abmachung:</strong> ${ratings.abmachung}</p>
+                        `;
+                    })
+                    .catch(error => {
+                        console.error('Fehler beim Laden der Durchschnittsbewertungen als Fahrer:', error);
+                        document.getElementById('fahrerRatings').innerHTML = 'Fehler beim Laden der Bewertungen';
+                    });
+
+            }
+
+            // Nachricht senden Funktionalität
+            document.getElementById('sendMessageButton').addEventListener('click', async () => {
+                const messageText = document.getElementById('chatMessageInput').value;
+                const receiverUsername = username; 
+
+                const formData = new URLSearchParams();
+                formData.append('receiverUsername', receiverUsername);
+                formData.append('messageText', messageText);
+
+                try {
+                    const response = await fetch('/sendMessage', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: formData.toString()
+                    });
+
+                    if (response.ok) {
+                        alert('Nachricht erfolgreich gesendet');
+                        document.getElementById('chatMessageInput').value = ''; // Textfeld leeren
+                    } else {
+                        const error = await response.text();
+                        throw new Error(error || 'Nachricht konnte nicht gesendet werden');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert(err.message);
+                }
+            });
+        });
+    </script>
+
+    <footer class="footer">
+        <p>© 2023 MyCargonaut | <a href="support.html" style="color: white;">Support</a></p>
+    </footer>
+</body>
+</html>

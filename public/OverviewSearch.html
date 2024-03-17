@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Suchanfragedetails - MyCargonaut</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+    <header>
+    </header>
+
+    <main>
+        <div class="profile-container">
+            <div class="search-layout">
+                <section id="search-details" class="search-details">
+                    <h2>Suchanfragedetails</h2>
+                    <div id="details-container">
+                        <!-- Suchanfragedetails werden hier eingefügt -->
+                    </div>
+                </section>
+
+                <section id="offers-section" class="offers-section">
+                    <h2>Angebote auf diese Suchanfrage</h2>
+                    <ul id="offer-list">
+                        <!-- Angebotsliste wird hier eingefügt -->
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchId = urlParams.get('searchId');
+
+    if (searchId) {
+        fetch(`/getSearchDetails?searchId=${searchId}`)
+            .then(response => response.json())
+            .then(details => {
+                const container = document.getElementById('details-container');
+                container.innerHTML = `
+                    <p><strong>Startort:</strong> ${details.startOrt}</p>
+                    <p><strong>Zielort:</strong> ${details.zielOrt}</p>
+                    <p><strong>Startdatum:</strong> ${details.startDatum}</p>
+                    <p><strong>Personen:</strong> ${details.personen}</p>
+                    <p><strong>Raum:</strong> ${details.raum} m²</p>
+                    <p><strong>Gewicht:</strong> ${details.gewicht} kg</p>
+                `;
+            })
+            .catch(error => console.error('Fehler beim Laden der Suchanfragedetails:', error));
+
+        loadOffersForSearch(searchId);
+    }
+});
+
+function loadOffersForSearch(searchId) {
+    fetch(`/getOffersForSearch?searchId=${searchId}`)
+        .then(response => response.json())
+        .then(offers => {
+            const offerList = document.getElementById('offer-list');
+            offerList.innerHTML = ''; // Stelle sicher, dass die Liste zuerst geleert wird.
+            offers.forEach(offer => {
+                offerList.innerHTML += `
+                    <li>
+                        Angebot von <a href="Profilextern.html?username=${encodeURIComponent(offer.benutzername)}">${offer.benutzername}</a>: 
+                        Preis: ${offer.preis}€, Datum: ${offer.datum}, Status: ${offer.status}
+                        <button onclick="updateOfferStatus(${offer.searchofferId}, 'Akzeptiert')">Akzeptieren</button>
+                        <button onclick="updateOfferStatus(${offer.searchofferId}, 'Abgelehnt')">Ablehnen</button>
+                    </li>
+                `;
+            });
+        })
+        .catch(error => console.error('Fehler beim Laden der Angebote:', error));
+}
+
+function updateOfferStatus(searchofferId, status) {
+    fetch(`/updateOfferStatus`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ searchofferId, status })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            location.reload(); // Aktualisiere die Seite, um den geänderten Status anzuzeigen
+        } else {
+            alert('Fehler beim Aktualisieren des Status.');
+        }
+    })
+    .catch((error) => {
+        console.error('Fehler:', error);
+    });
+}
+    </script>
+
+    <footer>
+    </footer>
+</body>
+</html>

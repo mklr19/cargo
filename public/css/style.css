@@ -1,6 +1,8 @@
 ﻿body {
     font-family: Arial, sans-serif;
-    background-color: #b3d1ff; /* Hellblau */
+    background: url('../img/Export/1x/semi_androidMyCargonautmdpi.png') center center fixed;
+    background-size: auto 80%;
+    background-repeat: no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -9,11 +11,12 @@
 }
 
 .login-container {
-    background-color: white;
+    background-color: rgba(255, 255, 255, 1.0); 
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
 }
+
 
 .register-container {
     margin-top: 50px;
@@ -21,26 +24,28 @@
     background-color: white;
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px; /* oder eine passende Breite */
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    width: 300px; 
 }
+
+
 
 .password-reset-container {
     background-color: white;
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px; /* oder eine passende Breite */
-    margin: auto; /* Zentriert den Container */
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    width: 300px; 
+    margin: auto; 
 }
 
 .logout-container {
     background-color: white;
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px; /* oder eine passende Breite */
-    margin: auto; /* Zentriert den Container */
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    width: 300px; 
+    margin: auto; 
     text-align: center;
 }
 
@@ -48,9 +53,10 @@
     background-color: white;
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 400px; /* oder eine passende Breite */
-    margin: auto; /* Zentriert den Container */
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    max-width: 800px; 
+    margin: auto; 
+    width: 100%; 
 }
 
 .profile-info p {
@@ -58,13 +64,32 @@
 }
 
 .profile-picture img {
-    width: 100px; /* oder eine passende Größe */
-    height: 100px; /* oder eine passende Größe */
-    border-radius: 50%; /* Kreisförmiges Bild */
+    width: 100px; 
+    height: 100px; 
+    border-radius: 50%; 
     object-fit: cover;
 }
 
 
+
+.offer-layout {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px; 
+}
+
+.offer-details, .bookings-section {
+    flex-grow: 1; 
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+
+.offer-layout {
+    max-width: 1200px;
+    margin: auto;
+}
 
 
 .input-group {
@@ -92,24 +117,35 @@ button {
     background-color: #007bff;
     color: white;
     cursor: pointer;
+    margin-bottom: 10px;
+}
+input {
+    padding: 10px;
+    margin-bottom: 10px;
+   
 }
 
-    button:hover {
-        background-color: #0056b3;
-    }
+
+button:hover {
+    background-color: #0056b3;
+}
 
 .additional-options {
     margin-top: 15px;
     text-align: center;
 }
 
-    .additional-options a {
-        text-decoration: none;
-        color: #007bff;
-        margin: 0 5px;
-    }
+.additional-options a {
+    text-decoration: none;
+    color: #007bff;
+    margin: 0 5px;
+}
 
-        .additional-options a:hover {
-            text-decoration: underline;
-        }
+.additional-options a:hover {
+    text-decoration: underline;
+}
 
+.profile-link {
+    text-decoration: none;
+    color: #007bff;
+}

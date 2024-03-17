@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Buchungsdetails - MyCargonaut</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+    <header>
+    </header>
+
+    <main>
+        <div class="profile-container">
+            <section id="booking-details">
+                <h2>Buchungsdetails</h2>
+                <div id="details-container">
+                    <!-- Buchungsdetails werden hier eingefügt -->
+                </div>
+            </section>
+        </div>
+</main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookingId = urlParams.get('bookingId');
+
+            if (bookingId) {
+                fetch(`/getBookingDetails?bookingId=${bookingId}`)
+                    .then(response => response.json())
+                    .then(details => {
+                        const container = document.getElementById('details-container');
+                        container.innerHTML = `
+                            <p><strong>Angebot von:</strong> <a href="Profilextern.html?username=${encodeURIComponent(details.benutzername)}">${details.benutzername}</a></p>
+                            <p><strong>Startort:</strong> ${details.startOrt}</p>
+                            <p><strong>Zielort:</strong> ${details.zielOrt}</p>
+                            <p><strong>Datum:</strong> ${details.startZeit}</p>
+                            <p><strong>Personen:</strong> ${details.personen}</p>
+                            <p><strong>Stauraum:</strong> ${details.raum} m²</p>
+                            <p><strong>Gewicht:</strong> ${details.gewicht} kg</p>
+                            <p><strong>Preis:</strong> ${details.preis}€</p>
+                            <button id="backToDashboard">Zurück zur Startseite</button>
+                            <button id="cancelBooking">Stornieren</button>
+                        `;
+
+                        // Event Listener für den "Zurück zur Startseite" Button
+                        document.getElementById('backToDashboard').addEventListener('click', function () {
+                            window.location.href = 'dashboard.html';
+                        });
+
+                        // Event Listener für den "Stornieren" Button
+                        document.getElementById('cancelBooking').addEventListener('click', function () {
+                            if (confirm('Möchten Sie diese Buchung wirklich stornieren?')) {
+                                fetch(`/cancelBooking?bookingId=${bookingId}`, { method: 'DELETE' })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            alert('Buchung erfolgreich storniert');
+                                            window.location.href = 'dashboard.html';
+                                        } else {
+                                            alert('Fehler beim Stornieren der Buchung');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Fehler:', error);
+                                        alert('Ein Fehler ist aufgetreten: ' + error.message);
+                                    });
+                            }
+                        });
+                    })
+                    .catch(error => console.error('Fehler beim Laden der Buchungsdetails:', error));
+            }
+        });
+    </script>
+
+    <footer>
+    </footer>
+</body>
+</html>

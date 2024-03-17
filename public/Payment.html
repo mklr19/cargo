@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <title>MyCargonaut - Hauptseite</title>
+    <link rel="stylesheet" type="text/css" href="css/sides.css">
+    <link rel="stylesheet" type="text/css" href="css/payment.css">
+</head>
+<body class="dashboard">
+    <header>
+        <div class="header-container">
+            <img src="./img/Export/0.75x/semi_androidMyCargonautldpi.png" alt="MyCargonaut Logo" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Startseite</a></li>
+                    <li><a href="offers.html">Angebote</a></li>
+                    <li><a href="search.html">Suchanfragen</a></li>
+                    <li><a href="myrides.html">Meine Fahrten</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons-container">
+                <div class="icon-container">
+                    <a class="coin-icon-container" href="Payment.html">
+                        <img src="./img/coin.png" alt="Geld Icon">
+                    </a>
+                    <span id="currentBalance" class="balance">0€</span>
+                    <a class="nachricht-icon-container" href="OverviewChats.html">
+                        <img src="./img/nachricht.png" alt="Nachrichten Icon">
+                    </a>
+                </div>
+                <div class="profile-icon-container" onclick="toggleDropdown()">
+                    <img src="./img/profil.png" alt="Profil Icon" class="profile-icon">
+                    <div class="dropdown" id="profileDropdown">
+                        <a href="Profile.html">Mein Profil</a>
+                        <a href="vehicles.html">Fahrzeuge verwalten</a>
+                        <a href="logout.html">Abmelden</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="profile-container">
+            <!-- Guthaben -->
+            <section class="profile-info">
+                
+            </section>
+    
+            <!-- Geld hinzufügen und Geld auszahlen nebeneinander -->
+            <div class="money-actions-container">
+                <section class="add-money-section">
+                    <h2>Guthaben hinzufügen</h2>
+                    <form id="addMoneyForm">
+                        <label for="paymentMethod">Zahlungsmethode:</label>
+                        <select id="paymentMethod" name="paymentMethod">
+                            <option value="paypal">PayPal</option>
+                            <option value="creditcard">Kreditkarte</option>
+                            <option value="banktransfer">Banküberweisung</option>
+                        </select>
+    
+                        <label for="amount">Betrag:</label>
+                        <input type="number" id="amount" name="amount" step="0.01" placeholder="Betrag in Euro" required>
+    
+                        <button type="submit">Guthaben hinzufügen</button>
+                    </form>
+                </section>
+    
+                <section class="withdraw-money-section">
+                    <h2>Guthaben auszahlen</h2>
+                    <form id="withdrawMoneyForm">
+                        <label for="withdrawAmount">Betrag:</label>
+                        <input type="number" id="withdrawAmount" name="withdrawAmount" step="0.01" placeholder="Betrag in Euro" required>
+                        <button type="submit">Guthaben auszahlen</button>
+                    </form>
+                </section>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="footer">
+        <p>© 2023 MyCargonaut | <a href="support.html" style="color: white;">Support</a></p>
+    </footer>
+
+    <script>
+        function toggleDropdown() {
+            var dropdown = document.getElementById('profileDropdown');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        }
+
+        document.addEventListener('mouseup', function (event) {
+            var dropdown = document.getElementById('profileDropdown');
+            if (!dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        window.onload = async () => {
+            try {
+                const response = await fetch('/getUserData');
+                if (!response.ok) throw new Error('Fehler beim Laden der Benutzerdaten');
+
+                const userData = await response.json();
+                document.querySelector('.profile-info').innerHTML = `
+                <p class="balance-info"><strong>Aktuelles Guthaben:</strong> <span class="balance">${userData.geld}€</span></p>
+                    `;
+
+                document.getElementById('currentBalance').textContent = `${userData.geld}€`;
+
+              
+            } catch (err) {
+                console.error('Fehler:', err);
+            }
+        };
+
+
+
+        document.getElementById('addMoneyForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const amount = document.getElementById('amount').value;
+            const response = await fetch('/addMoney', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ amount: amount })
+            });
+
+            if (response.ok) {
+                alert('Geld erfolgreich hinzugefügt');
+                window.location.reload(); // Seite neu laden, um das aktualisierte Guthaben anzuzeigen
+            } else {
+                const errorText = await response.text();
+                alert('Fehler: ' + errorText);
+            }
+        });
+
+        document.getElementById('withdrawMoneyForm').addEventListener('submit', async (event) => {
+    event.preventDefault(); // Verhindere die Standard-Formularübermittlung
+    const withdrawAmount = document.getElementById('withdrawAmount').value;
+    const response = await fetch('/withdrawMoney', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ withdrawAmount })
+    });
+
+    if (response.ok) {
+        alert('Guthaben erfolgreich ausgezahlt');
+        window.location.reload(); // Seite neu laden, um das aktualisierte Guthaben anzuzeigen
+    } else {
+        const errorText = await response.text();
+        alert('Fehler: ' + errorText);
+    }
+});
+
+
+    
+    </script>
+</body>
+</html>

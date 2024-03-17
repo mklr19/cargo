@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8" />
+    <title>Search Offer - MyCargonaut</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+
+    <div class="profile-container">
+        <h2>Anfragendetails</h2>
+        <div id="searchDetails">
+            <!-- Angebotdetails werden hier geladen -->
+        </div>
+        <!-- Preis-Eingabefeld und Absende-Button -->
+        <div id="offerResponse">
+            <input type="number" id="price" placeholder="Preis eingeben" step="0.01" required>
+            <button onclick="submitOffer()">Angebot absenden</button>
+        </div>
+
+    </div>
+
+    <script>
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchId = urlParams.get('searchId');
+            if (searchId) {
+                loadSearchDetails(searchId);
+            }
+        };
+
+        function loadSearchDetails(searchId) {
+            fetch(`/getSearchDetails?searchId=${searchId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const detailsContainer = document.getElementById('searchDetails');
+                    detailsContainer.innerHTML = `
+                            <p>Benutzername: <a class="profile-link" href="Profilextern.html?username=${encodeURIComponent(data.benutzername)}">${data.benutzername}</a></p>
+                            <p>Startort: ${data.startOrt}</p>
+                            <p>Zielort: ${data.zielOrt}</p>
+                            <p>Startdatum: ${data.startDatum}</p>
+                            <p>Personen: ${data.personen}</p>
+                            <p>Raum: ${data.raum}m²</p>
+                            <p>Gewicht: ${data.gewicht}kg</p>
+                        `;
+                })
+                .catch(error => console.error('Fehler beim Laden der Suchanfragedetails: ', error));
+        }
+        function submitOffer() {
+            const price = document.getElementById('price').value;
+            const searchId = new URLSearchParams(window.location.search).get('searchId');
+
+            fetch('/submitSearchOffer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `searchId=${searchId}&price=${price}`
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Angebot erfolgreich abgesendet');
+                        window.location.href = 'dashboard.html'; // Weiterleitung zur dashboard.html
+                    } else {
+                        throw new Error('Fehler beim Absenden des Angebots');
+                    }
+                })
+                .catch(error => {
+                    console.error('Fehler:', error);
+                });
+        }
+    </script>
+
+</body>
+</html>
