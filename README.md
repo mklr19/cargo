@@ -48,3 +48,7 @@ Use the following Login Credentials:
 - **init.sql**: This is the initial SQL Dump to create the Database.
 - **Dokumentation**: Folder which includes all Mockups and Diagrams.
 - **postgres-db**: This Folder includes the database, it will show up after the inital build.
+
+### Hint
+- If you have postgres installed on your device, you have to stopp the postgres service.
+
