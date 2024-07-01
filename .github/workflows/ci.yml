@@ -48,6 +48,12 @@ jobs:
             sleep 5
           done
 
+      - name: Initialize Database
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -d cargo -f init.sql
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5433/cargo
+
       - name: Run Tests
         run: npm test
         env:
