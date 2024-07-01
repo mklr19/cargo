@@ -40,7 +40,7 @@ jobs:
         run: |
           echo "Waiting for database to be ready..."
           for i in {1..60}; do
-            if pg_isready -h localhost -p 5432 -U postgres; then
+            if pg_isready -h localhost -p 5433 -U postgres; then
               echo "Database is ready!"
               break
             fi
