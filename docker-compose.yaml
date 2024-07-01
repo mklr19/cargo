@@ -28,5 +28,16 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./postgres-db:/var/lib/postgresql/data
 
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@pgadmin.org  # Set your desired email
+      PGADMIN_DEFAULT_PASSWORD: admin          # Set your desired password
+    ports:
+      - "5050:80"  # You can access pgAdmin on http://localhost:5050
+    networks:
+      - shared-network
+
 networks:
   shared-network:

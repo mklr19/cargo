@@ -27,12 +27,11 @@
 
     <script>
         document.getElementById('loginForm').onsubmit = async function (event) {
-            event.preventDefault(); // Verhindert die tatsächliche Formularübermittlung
+            event.preventDefault(); 
 
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            // Verwende die Fetch-API, um die Daten an den Server zu senden
             try {
                 const response = await fetch('/login', {
                     method: 'POST',
@@ -42,9 +41,8 @@
                     body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
                 });
 
-                // Verwende den Statuscode, um zu überprüfen, ob der Login erfolgreich war
                 if (response.status === 200) {
-                    window.location.href = '/dashboard.html'; // Weiterleitung zur Dashboard-Seite
+                    window.location.href = '/dashboard.html'; 
                 } else {
                     document.getElementById('error-message').style.display = 'block';
                     document.getElementById('error-message').textContent = 'Kombination aus Benutzername und Passwort ist falsch.';

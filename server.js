@@ -1,22 +1,20 @@
 const express = require('express');
 const path = require('path');
-const bodyParser = require('body-parser'); // Zum Parsen der Formulardaten
-const pool = require('./db'); // Stelle sicher, dass du eine db.js-Datei hast, die deine Datenbankkonfiguration enth�lt
+const bodyParser = require('body-parser');
+const pool = require('./db'); 
 const app = express();
 const port = 3005;
 
-// Middleware, um URL-kodierte Daten zu parsen (wichtig f�r POST-Anfragen)
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Statische Dateien bedienen
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Route f�r die Startseite (Login-Seite)
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '/public/Login.html'));
 });
 
-// Route f�r den GET-Request der Login-Seite
+
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, '/public/Login.html'));
 });
@@ -31,7 +29,7 @@ app.post('/login', async (req, res) => {
             [username, password]
         );
         if (user.rows.length > 0) {
-            angemeldeterBenutzer = username; // Benutzername speichern
+            angemeldeterBenutzer = username; 
             res.status(200).send('Login erfolgreich');
         } else {
             res.status(401).send('Login fehlgeschlagen: Falscher Benutzername oder Passwort.');
@@ -45,7 +43,6 @@ app.post('/login', async (req, res) => {
 app.post('/register', async (req, res) => {
     const { bname, vname, nname, email, password, phone, birthday } = req.body;
 
-    // Datum in einzelne Komponenten zerlegen, falls benötigt
     const [year, month, day] = birthday.split('-');
 
     try {
@@ -91,7 +88,6 @@ app.post('/saveNote', async (req, res) => {
 
     try {
         const { note } = req.body;
-        //console.log('Speichern der Notiz:', note); // Zum Debuggen
         await pool.query(
             'UPDATE public."user" SET notiz = $1 WHERE benutzername = $2',
             [note, angemeldeterBenutzer]
@@ -105,7 +101,6 @@ app.post('/saveNote', async (req, res) => {
 
 
 
-// Endpunkt zum Hinzuf�gen von Geld zum Benutzerkonto
 app.post('/addMoney', async (req, res) => {
     if (!angemeldeterBenutzer) {
         return res.status(401).send('Bitte zuerst anmelden');
@@ -114,7 +109,6 @@ app.post('/addMoney', async (req, res) => {
     const { amount } = req.body;
 
     try {
-        // Ermitteln des aktuellen Guthabens des Benutzers
         const userResult = await pool.query(
             'SELECT geld FROM public."user" WHERE benutzername = $1',
             [angemeldeterBenutzer]
@@ -124,7 +118,6 @@ app.post('/addMoney', async (req, res) => {
             let currentBalance = parseFloat(userResult.rows[0].geld);
             const newBalance = currentBalance + parseFloat(amount);
 
-            // Aktualisieren des Guthabens des Benutzers
             await pool.query(
                 'UPDATE public."user" SET geld = $1 WHERE benutzername = $2',
                 [newBalance, angemeldeterBenutzer]
@@ -180,7 +173,6 @@ app.post('/addVehicle', async (req, res) => {
     const { brand, modell, color, consumption, seats, doors, trunkspace, gewicht, sonder } = req.body;
 
     try {
-        // Ermitteln der userId des angemeldeten Benutzers
         const userResult = await pool.query(
             'SELECT "userId" FROM public."user" WHERE benutzername = $1',
             [angemeldeterBenutzer]
@@ -189,13 +181,12 @@ app.post('/addVehicle', async (req, res) => {
         if (userResult.rows.length > 0) {
             const userId = userResult.rows[0].userId;
 
-            // Einf�gen des neuen Fahrzeugs in die Datenbank
             await pool.query(
                 'INSERT INTO public.car (marke, modell, farbe, verbrauch, sitze, tueren, stauraum, maxgewicht, sonderfunktion,  "userId") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
                 [brand, modell, color, consumption, seats, doors, trunkspace, gewicht, sonder, userId]
             );
 
-            res.redirect('/vehicles.html'); // Umleitung zur�ck zur Fahrzeugverwaltungsseite
+            res.redirect('/vehicles.html'); 
         } else {
             res.status(404).send('Benutzerkonto nicht gefunden');
         }
@@ -214,7 +205,6 @@ app.delete('/deleteVehicle/:carId', async (req, res) => {
     }
 
     try {
-        // �berpr�fen, ob das Fahrzeug dem angemeldeten Benutzer geh�rt
         const vehicle = await pool.query(
             'SELECT * FROM public.car WHERE "carId" = $1 AND "userId" = (SELECT "userId" FROM public."user" WHERE benutzername = $2)',
             [carId, angemeldeterBenutzer]
@@ -273,13 +263,10 @@ app.post('/addSearch', async (req, res) => {
 
 app.get('/getSearchRequests', async (req, res) => {
     try {
-        // Extrahiere Filterparameter aus der Query-String
         const { startOrt, zielOrt, startDatum, personen, gewicht } = req.query;
 
-        // Grundlegende SQL-Abfrage
         let sql = 'SELECT s."searchId", s."startOrt", s."zielOrt", s."startDatum", s.personen, s.raum, s.gewicht, u.benutzername FROM public.searchs s JOIN public."user" u ON s."userId" = u."userId" WHERE 1=1';
 
-        // Dynamisch Filterbedingungen hinzufügen, wenn Filterparameter vorhanden sind
         if (startOrt) {
             sql += ' AND s."startOrt" = $1';
         }
@@ -296,7 +283,6 @@ app.get('/getSearchRequests', async (req, res) => {
             sql += ' AND s.gewicht = $5';
         }
 
-        // Führe die Abfrage aus
         const searchRequests = await pool.query(sql, [startOrt, zielOrt, startDatum, personen, gewicht].filter(Boolean)); // .filter(Boolean) entfernt undefined Werte
 
         res.json(searchRequests.rows);
