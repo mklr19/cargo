@@ -17,7 +17,7 @@ Make sure you have the following installed on your system:
 1. Clone the repository to your local machine:
 
     ```bash
-    [git clone https://git.thm.de/lsan07/my-cargonaut.git](https://github.com/mklr19/cargo.git)
+    https://github.com/mklr19/cargo.git
     ```
 
 2. Navigate to the project directory:
