@@ -1,4 +1,3 @@
-// Test für die Registrierungsform
 
 
 const assert = require('assert');
