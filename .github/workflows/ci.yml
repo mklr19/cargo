@@ -17,9 +17,9 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: cargo
         ports:
-          - 5432:5432
+          - 5433:5432
         options: >-
-          --health-cmd="pg_isready -U postgres -d cargo -p 5432"
+          --health-cmd="pg_isready -U postgres -d cargo -p 5433"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=20
@@ -40,7 +40,7 @@ jobs:
         run: |
           echo "Waiting for database to be ready..."
           for i in {1..120}; do
-            if pg_isready -h localhost -p 5432 -U postgres; then
+            if pg_isready -h localhost -p 5433 -U postgres; then
               echo "Database is ready!"
               break
             fi
@@ -52,9 +52,9 @@ jobs:
         run: |
           PGPASSWORD=postgres psql -h localhost -U postgres -d cargo -f init.sql
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/cargo
+          DATABASE_URL: postgres://postgres:postgres@localhost:5433/cargo
 
       - name: Run Tests
         run: npm test
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/cargo
+          DATABASE_URL: postgres://postgres:postgres@localhost:5433/cargo
