@@ -12,10 +12,10 @@ name: ESLint
 on:
   push:
     branches:
-      - main 
+      - main
   pull_request:
     branches:
-      - main  
+      - main
 
 jobs:
   lint:
@@ -28,10 +28,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18' 
+          node-version: '18'  # Oder die gewünschte Node.js-Version
 
       - name: Install dependencies
         run: npm install
+
+      - name: Clear npm cache
+        run: npm cache clean --force
 
       - name: Run ESLint
         run: npm run lint
