@@ -36,6 +36,10 @@ jobs:
       - name: Clear npm cache
         run: npm cache clean --force
 
+      - name: Fix script permissions
+        run: chmod +x node_modules/.bin/eslint
+
       - name: Run ESLint
-        run: npm run lint
+        run: npx eslint ./
+
 
